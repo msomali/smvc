@@ -25,7 +25,7 @@ SECRET_KEY = 'c@y_y^@t0g*s!rld-0mfx@=lc$gl#rjdrhl0mnnv_2f)((#sx3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1',  'msomali.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', 'msomali.pythonanywhere.com']
 
 
 # Application definition
@@ -83,6 +83,10 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '3306',
+        # 'NAME': 'msomali$jihakiki',
+        # 'USER': 'msomali',
+        # 'PASSWORD': 'Muungano@1964',
+        # 'HOST': 'msomali.mysql.pythonanywhere-services.com',
     }
 }
 

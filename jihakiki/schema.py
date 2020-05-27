@@ -1,6 +1,5 @@
 import graphene
 from graphene_django import DjangoObjectType
-from graphql import GraphQLError
 
 from .models import SentMessages, ReceivedMessages
 
@@ -14,20 +13,18 @@ class ReceivedMessagesType(DjangoObjectType):
         model = ReceivedMessages
 
 
-# Query Received SMS received from Gateway (Stored in ReceivedMessages Model)
 class Query(graphene.ObjectType):
-    r_messages = graphene.List(ReceivedMessagesType)
-
-    def resolve_r_messages(self, info, **kwargs):
-        return ReceivedMessages.objects.all()
-
-
-# Query Sent SMS sent from Django (Stored in SentMessages Model)
-class Query(graphene.ObjectType):
+    # Query Sent SMS sent from Django (Stored in SentMessages Model)
     s_messages = graphene.List(SentMessagesType)
+
+    # Query Received SMS received from Gateway (Stored in ReceivedMessages Model)
+    r_messages = graphene.List(ReceivedMessagesType)
 
     def resolve_s_messages(self, info, **kwargs):
         return SentMessages.objects.all()
+
+    def resolve_r_messages(self, info, **kwargs):
+        return ReceivedMessages.objects.all()
 
 
 # Send SMS (All Messages that are sent from Django to be stored at SentMessages Model)
