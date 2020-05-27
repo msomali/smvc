@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
 # Test Github Webhook
-from . import views
+from jihakiki import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
