@@ -12,7 +12,7 @@ def hello(request):
     return HttpResponse('pong')
 
 
-# Test Telerivet Webhook
+# Test Telerivet Webhook API
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import json
@@ -29,23 +29,6 @@ def webhook(request):
         from_number = request.POST.get('from_number')
         phone_id = request.POST.get('phone_id')
 
-        # REST API
-        # The code below sends an SMS message via Telerivet:
-        # Temeke as Pilot
-
-        import telerivet
-
-        API_KEY = 'c7fAkAuMy8a6aUZQWyNNyYXSutXuszcV'
-        PROJECT_ID = 'PJ592866ba523f191f'
-
-        tr = telerivet.API(API_KEY)
-        project = tr.initProjectById(PROJECT_ID)
-
-        sent_msg = project.sendMessage(
-            content = "hello world",
-            to_number = "+255715908000",
-        )
-
         # do something with the message, e.g. send an autoreply
 
         return HttpResponse(json.dumps({
@@ -53,3 +36,22 @@ def webhook(request):
                 {'content': "Thanks for your message!"}
             ]
         }), 'application/json')
+
+# Test Telerivet REST API
+def message(request):
+    # REST API
+    # The code below sends an SMS message via Telerivet:
+    # Temeke as Pilot
+
+    import telerivet
+
+    API_KEY = 'c7fAkAuMy8a6aUZQWyNNyYXSutXuszcV'
+    PROJECT_ID = 'PJ592866ba523f191f'
+
+    tr = telerivet.API(API_KEY)
+    project = tr.initProjectById(PROJECT_ID)
+
+    sent_msg = project.sendMessage(
+        content = "hello world",
+        to_number = "+255715908000",
+    )
