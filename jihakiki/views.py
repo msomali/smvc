@@ -31,6 +31,13 @@ def webhook(request):
 
         # do something with the message, e.g. send an autoreply
 
+        if content == 'Zutrax':
+            return HttpResponse(json.dumps({
+                'message': [
+                    {'content': "Your Technology Partner!"}
+                ]
+            }), 'application/json')
+
         return HttpResponse(json.dumps({
             'messages': [
                 {'content': "Thanks for your message!"}
@@ -43,7 +50,7 @@ def message(request):
     # The code below sends an SMS message via Telerivet:
     # Temeke as Pilot
 
-    import telerivet
+    from jihakiki import telerivet
 
     API_KEY = 'c7fAkAuMy8a6aUZQWyNNyYXSutXuszcV'
     PROJECT_ID = 'PJ592866ba523f191f'
@@ -55,3 +62,5 @@ def message(request):
         content = "hello world",
         to_number = "+255715908000",
     )
+
+    return HttpResponse('executed')
