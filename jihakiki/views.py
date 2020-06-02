@@ -31,18 +31,77 @@ def webhook(request):
 
         # do something with the message, e.g. send an autoreply
 
-        if content == 'Zutrax':
+        keyword = content.split(' ', maxsplit=1)
+
+        # Intro
+        if keyword[0] == 'Jihakiki':
             return HttpResponse(json.dumps({
                 'messages': [
-                    {'content': "Your Technology Partner!"}
+                    {'content': "Karibu JIHAKIKI, mfumo wa usajili wa wananchi katika serikali za mitaa wanamoishi.\nKujisajili, jibu ujumbe huu ukianza na neno AA.\nMfano: AA Walid Abdul Amir."}
                 ]
             }), 'application/json')
 
-        if content == 'JN Walid Abdul Amir Kambagha Mvungi':
-            content1 = content[slice(2)]
+        # Jina
+        elif keyword[0] == 'AA':
             return HttpResponse(json.dumps({
                 'messages': [
-                    {'content': content1 }
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kazi yako ukianza na neno BB." }
+                ]
+            }), 'application/json')
+
+        # Kazi
+        elif keyword[0] == 'BB':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kitongoji chako ukianza na neno CC." }
+                ]
+            }), 'application/json')
+
+        # Kitongoji
+        elif keyword[0] == 'CC':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi serikali ya mtaa ukianza na neno DD." }
+                ]
+            }), 'application/json')
+
+        # Serikali ya Mtaa
+        elif keyword[0] == 'DD':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kata yako ukianza na neno EE." }
+                ]
+            }), 'application/json')
+
+        # Kata
+        elif keyword[0] == 'EE':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi namba yako ya NIDA ukianza na neno FF." }
+                ]
+            }), 'application/json')
+
+        # NIDA
+        elif keyword[0] == 'FF':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kazi yako ukianza na neno GG." }
+                ]
+            }), 'application/json')
+
+        # PIN
+        elif keyword[0] == 'GG':
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Umehifadhi: "+keyword[1]+"\nUmefikia mwisho wa dodoso la JIHAKIKI. Ahsante!." }
+                ]
+            }), 'application/json')
+
+        # Exception
+        else:
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': "Samahani, umekosea mpangilio. Tafadhali hakiki ujumbe wako na kisha utume tena. Ahsante!"}
                 ]
             }), 'application/json')
 
