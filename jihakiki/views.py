@@ -42,7 +42,7 @@ def webhook(request):
             content1 = content[slice(2)]
             return HttpResponse(json.dumps({
                 'messages': [
-                    {'content': content }
+                    {'content': content1 }
                 ]
             }), 'application/json')
 
