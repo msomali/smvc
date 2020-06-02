@@ -38,6 +38,14 @@ def webhook(request):
                 ]
             }), 'application/json')
 
+        if content == 'JN Walid Abdul Amir Kambagha Mvungi':
+            content1 = content[slice(2)]
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': content + }
+                ]
+            }), 'application/json')
+
         return HttpResponse(json.dumps({
             'messages': [
                 {'content': "Thanks for your message!"}
