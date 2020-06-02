@@ -50,7 +50,7 @@ def webhook(request):
             }), 'application/json')
 
         # Kazi
-        elif keyword[0] == 'AA':
+        elif keyword[0] == 'BB':
             return HttpResponse(json.dumps({
                 'messages': [
                     {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kitongoji chako ukianza na neno CC." }
