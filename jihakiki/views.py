@@ -33,7 +33,7 @@ def webhook(request):
 
         if content == 'Zutrax':
             return HttpResponse(json.dumps({
-                'message': [
+                'messages': [
                     {'content': "Your Technology Partner!"}
                 ]
             }), 'application/json')
