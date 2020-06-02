@@ -50,7 +50,7 @@ def webhook(request):
             }), 'application/json')
 
         # Kazi
-        elif keyword[0] == 'BB':
+        elif keyword[0] == 'AA':
             return HttpResponse(json.dumps({
                 'messages': [
                     {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kitongoji chako ukianza na neno CC." }
@@ -85,7 +85,7 @@ def webhook(request):
         elif keyword[0] == 'FF':
             return HttpResponse(json.dumps({
                 'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kazi yako ukianza na neno GG." }
+                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi tarakimu zako 4 za siri yako ukianza na neno GG." }
                 ]
             }), 'application/json')
 
@@ -105,11 +105,11 @@ def webhook(request):
                 ]
             }), 'application/json')
 
-        return HttpResponse(json.dumps({
-            'messages': [
-                {'content': "Thanks for your message!"}
-            ]
-        }), 'application/json')
+        # return HttpResponse(json.dumps({
+        #     'messages': [
+        #         {'content': "Thanks for your message!"}
+        #     ]
+        # }), 'application/json')
 
 # Test Telerivet REST API
 def message(request):
