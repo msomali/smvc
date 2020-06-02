@@ -40,7 +40,7 @@ def webhook(request):
 
         return HttpResponse(json.dumps({
             'messages': [
-                {'content': "Thanks for your message!"}
+                {'content': "Thanks for your Message!"}
             ]
         }), 'application/json')
 
