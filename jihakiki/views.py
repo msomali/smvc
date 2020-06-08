@@ -15,6 +15,9 @@ def hello(request):
 # Test Telerivet Webhook API
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from .models import TempUser, Mwananchi, KeyMessage
+from django.db.models import Q
+
 import json
 
 @csrf_exempt
@@ -32,78 +35,93 @@ def webhook(request):
         # do something with the message, e.g. send an autoreply
 
         keyword = content.split(' ', maxsplit=1)
+        f_key = keyword[0]
+        body_key = keyword[1]
 
-        # Intro
-        if keyword[0] == 'Jihakiki':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Karibu JIHAKIKI, mfumo wa usajili wa wananchi katika serikali za mitaa wanamoishi.\nKujisajili, jibu ujumbe huu ukianza na neno AA.\nMfano: AA Walid Abdul Amir."}
-                ]
-            }), 'application/json')
+        def checker(f_key, body_key, from_number):
+            """Function to the check for keyword and phone in the DB"""
+            t1 = KeyMessage.objects.all()
+            # t2 = TempUser.objects.all()
+            # t3 = Mwananchi.objects.all()
 
-        # Jina
-        elif keyword[0] == 'AA':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kazi yako ukianza na neno BB." }
-                ]
-            }), 'application/json')
+            if f_key:
+                filter = (Q(f_key__icontains=f_key))
+                t1 = t1.filter(filter)
 
-        # Kazi
-        elif keyword[0] == 'BB':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kitongoji chako ukianza na neno CC." }
-                ]
-            }), 'application/json')
+            return t1
 
-        # Kitongoji
-        elif keyword[0] == 'CC':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi serikali ya mtaa ukianza na neno DD." }
-                ]
-            }), 'application/json')
 
-        # Serikali ya Mtaa
-        elif keyword[0] == 'DD':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kata yako ukianza na neno EE." }
-                ]
-            }), 'application/json')
+        # # Intro
+        # if keyword[0] == 'Jihakiki':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Karibu JIHAKIKI, mfumo wa usajili wa wananchi katika serikali za mitaa wanamoishi.\nKujisajili, jibu ujumbe huu ukianza na neno AA.\nMfano: AA Walid Abdul Amir."}
+        #         ]
+        #     }), 'application/json')
 
-        # Kata
-        elif keyword[0] == 'EE':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi namba yako ya NIDA ukianza na neno FF." }
-                ]
-            }), 'application/json')
+        # # Jina
+        # elif keyword[0] == 'AA':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kazi yako ukianza na neno BB." }
+        #         ]
+        #     }), 'application/json')
 
-        # NIDA
-        elif keyword[0] == 'FF':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi tarakimu zako 4 za siri yako ukianza na neno GG." }
-                ]
-            }), 'application/json')
+        # # Kazi
+        # elif keyword[0] == 'BB':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kitongoji chako ukianza na neno CC." }
+        #         ]
+        #     }), 'application/json')
 
-        # PIN
-        elif keyword[0] == 'GG':
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Umehifadhi: "+keyword[1]+"\nUmefikia mwisho wa dodoso la JIHAKIKI. Ahsante!." }
-                ]
-            }), 'application/json')
+        # # Kitongoji
+        # elif keyword[0] == 'CC':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi serikali ya mtaa ukianza na neno DD." }
+        #         ]
+        #     }), 'application/json')
 
-        # Exception
-        else:
-            return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "Samahani, umekosea mpangilio. Tafadhali hakiki ujumbe wako na kisha utume tena. Ahsante!"}
-                ]
-            }), 'application/json')
+        # # Serikali ya Mtaa
+        # elif keyword[0] == 'DD':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi kata yako ukianza na neno EE." }
+        #         ]
+        #     }), 'application/json')
+
+        # # Kata
+        # elif keyword[0] == 'EE':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi namba yako ya NIDA ukianza na neno FF." }
+        #         ]
+        #     }), 'application/json')
+
+        # # NIDA
+        # elif keyword[0] == 'FF':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nHifadhi tarakimu zako 4 za siri yako ukianza na neno GG." }
+        #         ]
+        #     }), 'application/json')
+
+        # # PIN
+        # elif keyword[0] == 'GG':
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Umehifadhi: "+keyword[1]+"\nUmefikia mwisho wa dodoso la JIHAKIKI. Ahsante!." }
+        #         ]
+        #     }), 'application/json')
+
+        # # Exception
+        # else:
+        #     return HttpResponse(json.dumps({
+        #         'messages': [
+        #             {'content': "Samahani, umekosea mpangilio. Tafadhali hakiki ujumbe wako na kisha utume tena. Ahsante!"}
+        #         ]
+        #     }), 'application/json')
 
         # return HttpResponse(json.dumps({
         #     'messages': [

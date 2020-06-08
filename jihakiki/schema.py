@@ -1,7 +1,13 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from .models import SentMessages, ReceivedMessages
+from .models import SentMessages, ReceivedMessages, KeyMessage
+from django.db.models import Q
+
+class KeyMessageType(DjangoObjectType):
+    class Meta:
+        model = KeyMessage
+
 
 class SentMessagesType(DjangoObjectType):
     class Meta:
@@ -14,11 +20,28 @@ class ReceivedMessagesType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
+    # Query KeywordMessage
+    keywords = graphene.List(
+        KeyMessageType,
+        search=graphene.String()
+        )
+
     # Query Sent SMS sent from Django (Stored in SentMessages Model)
     s_messages = graphene.List(SentMessagesType)
 
     # Query Received SMS received from Gateway (Stored in ReceivedMessages Model)
     r_messages = graphene.List(ReceivedMessagesType)
+
+    def resolve_keywords(self, info, search=None, **kwargs):
+        km = KeyMessage.objects.all()
+
+        if search:
+            filter = (
+                Q(keyword__icontains=search)
+            )
+            km = km.filter(filter)
+
+        return km
 
     def resolve_s_messages(self, info, **kwargs):
         return SentMessages.objects.all()
