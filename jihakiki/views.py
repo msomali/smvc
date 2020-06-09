@@ -48,7 +48,12 @@ def webhook(request):
                 filter = (Q(f_key__icontains=f_key))
                 t1 = t1.filter(filter)
 
-            return t1
+            # return t1
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': t1}
+                ]
+            }), 'application/json')
 
 
         # # Intro

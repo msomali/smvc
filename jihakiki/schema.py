@@ -33,15 +33,15 @@ class Query(graphene.ObjectType):
     r_messages = graphene.List(ReceivedMessagesType)
 
     def resolve_keywords(self, info, search=None, **kwargs):
-        km = KeyMessage.objects.all()
+        # km = KeyMessage.objects.all()
 
         if search:
             filter = (
                 Q(keyword__icontains=search)
             )
-            km = km.filter(filter)
+            # km = km.filter(filter)
 
-        return km
+        return KeyMessage.objects.filter(filter)
 
     def resolve_s_messages(self, info, **kwargs):
         return SentMessages.objects.all()
