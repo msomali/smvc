@@ -51,7 +51,7 @@ def webhook(request):
             # return t1
             return HttpResponse(json.dumps({
                 'messages': [
-                    {'content': t1}
+                    {'content': "Yep!"}
                 ]
             }), 'application/json')
 
