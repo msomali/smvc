@@ -16,35 +16,35 @@ class ReceivedMessages(models.Model):
 
 
 class TempUser(models.Model):
-    mnc_id = models.CharField(max_length=13)
-    mnc_name = models.CharField(max_length=50)
-    mnc_phone = models.CharField(max_length=13)
-    mnc_occupation = models.CharField(max_length=50)
-    mnc_kitongoji = models.CharField(max_length=50)
-    mnc_mtaa_kijiji = models.CharField(max_length=50)
-    mnc_kata = models.CharField(max_length=50)
-    mnc_id = models.CharField(max_length=50)
-    mnc_id_number = models.IntegerField()
-    mnc_pin = models.IntegerField()
+    mnc_id = models.CharField(primary_key=True, max_length=13)
+    mnc_phone = models.CharField(unique=True, max_length=13)
+    mnc_name = models.CharField(max_length=50, null=True)
+    mnc_occupation = models.CharField(max_length=50, null=True)
+    mnc_kitongoji = models.CharField(max_length=50, null=True)
+    mnc_mtaa_kijiji = models.CharField(max_length=50, null=True)
+    mnc_kata = models.CharField(max_length=50, null=True)
+    mnc_id_card = models.CharField(max_length=50, null=True)
+    mnc_id_number = models.IntegerField(unique=True, null=True)
+    mnc_pin = models.IntegerField(null=True)
     mnc_date_time = models.DateTimeField(auto_now_add=True)
-    mnc_status = models.CharField(max_length=50)
     mnc_step = models.IntegerField()
+    mnc_status = models.CharField(max_length=50)
 
 
 class Mwananchi(models.Model):
-    mnc_id = models.CharField(max_length=13)
+    mnc_id = models.CharField(primary_key=True, max_length=13)
+    mnc_phone = models.CharField(unique=True, max_length=13)
     mnc_name = models.CharField(max_length=50)
-    mnc_phone = models.CharField(max_length=13)
     mnc_occupation = models.CharField(max_length=50)
     mnc_kitongoji = models.CharField(max_length=50)
     mnc_mtaa_kijiji = models.CharField(max_length=50)
     mnc_kata = models.CharField(max_length=50)
-    mnc_id = models.CharField(max_length=50)
-    mnc_id_number = models.IntegerField()
+    mnc_id_card = models.CharField(max_length=50)
+    mnc_id_number = models.IntegerField(unique=True)
     mnc_pin = models.IntegerField()
     mnc_date_time = models.DateTimeField(auto_now_add=True)
-    mnc_status = models.CharField(max_length=50)
     mnc_step = models.IntegerField()
+    mnc_status = models.CharField(max_length=50)
 
 
 class KeyMessage(models.Model):
