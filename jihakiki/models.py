@@ -139,7 +139,7 @@ class Weo(models.Model):
 
 # Model for storing Barua from Mjumbe with no phone for Jihakiki data
 class Barua(models.Model):
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
     veo_id = models.CharField(max_length=13)
     mwananchi_id = models.CharField(max_length=13, null=True)
     reference = models.CharField(unique=True, max_length=200, null=True)
@@ -154,7 +154,7 @@ class Barua(models.Model):
 
 # Model for storing Msimbo (Auto Generated PIN) used in various verification processes
 class Pin(models.Model):
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
     pin = models.CharField(max_length=6)
     generator_id = models.CharField(max_length=13)
     client_id = models.CharField(max_length=13)
