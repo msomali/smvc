@@ -24,7 +24,6 @@ from jihakiki import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
-    path('hello/', views.hello, name='hello'),
     path('telerivet/', views.webhook, name='telerivet'),
     path('message/', views.message, name='message'),
 ]

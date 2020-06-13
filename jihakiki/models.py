@@ -15,39 +15,157 @@ class ReceivedMessages(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, blank=True)
 
 
-class TempUser(models.Model):
-    mnc_id = models.CharField(primary_key=True, max_length=13)
-    mnc_phone = models.CharField(unique=True, max_length=13)
-    mnc_name = models.CharField(max_length=50, null=True)
-    mnc_occupation = models.CharField(max_length=50, null=True)
-    mnc_kitongoji = models.CharField(max_length=50, null=True)
-    mnc_mtaa_kijiji = models.CharField(max_length=50, null=True)
-    mnc_kata = models.CharField(max_length=50, null=True)
-    mnc_id_card = models.CharField(max_length=50, null=True)
-    mnc_id_number = models.IntegerField(unique=True, null=True)
-    mnc_pin = models.IntegerField(null=True)
-    mnc_date_time = models.DateTimeField(auto_now_add=True)
-    mnc_step = models.IntegerField()
-    mnc_status = models.CharField(max_length=50)
+# Model for holding Mwananchi Jihakiki profile during registration
+class TempMwananchi(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200, null=True)
+    occupation = models.CharField(max_length=200, null=True)
+    kitongoji = models.CharField(max_length=200, null=True)
+    mtaa_kijiji = models.CharField(max_length=200, null=True)
+    kata = models.CharField(max_length=200, null=True)
+    id_card = models.CharField(max_length=20, null=True)
+    id_number = models.IntegerField(unique=True, null=True)
+    pin = models.IntegerField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    status = models.CharField(max_length=20)
 
 
+# Model for storing Mwananchi Jihakiki complete profile
 class Mwananchi(models.Model):
-    mnc_id = models.CharField(primary_key=True, max_length=13)
-    mnc_phone = models.CharField(unique=True, max_length=13)
-    mnc_name = models.CharField(max_length=50)
-    mnc_occupation = models.CharField(max_length=50)
-    mnc_kitongoji = models.CharField(max_length=50)
-    mnc_mtaa_kijiji = models.CharField(max_length=50)
-    mnc_kata = models.CharField(max_length=50)
-    mnc_id_card = models.CharField(max_length=50)
-    mnc_id_number = models.IntegerField(unique=True)
-    mnc_pin = models.IntegerField()
-    mnc_date_time = models.DateTimeField(auto_now_add=True)
-    mnc_step = models.IntegerField()
-    mnc_status = models.CharField(max_length=50)
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    occupation = models.CharField(max_length=200)
+    kitongoji = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    is_active = models.CharField(max_length=20)
+    verification_status = models.CharField(max_length=20)
+    mjumbe_id = models.CharField(max_length=13, null=True)
+    date_mjumbe_verified = models.DateTimeField(auto_now_add=True, null=True)
+    barua_id = models.IntegerField(null=True)
+    veo_id = models.CharField(max_length=13, null=True)
+    date_veo_verified = models.DateTimeField(auto_now_add=True, null=True)
 
 
-class KeyMessage(models.Model):
+# Model for holding Mjumbe Jihakiki profile during registration
+class TempMjumbe(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    shina = models.IntegerField()
+    kitongoji = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    status = models.CharField(max_length=20)
+
+# Model for storing Mjumbe Jihakiki complete profile
+class Mjumbe(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    shina = models.IntegerField()
+    kitongoji = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    is_active = models.CharField(max_length=20)
+    verification_status = models.CharField(max_length=20)
+    veo_id = models.CharField(max_length=13, null=True)
+    date_veo_verified = models.DateTimeField(auto_now_add=True, null=True)
+
+
+# Model for holding VEO Jihakiki profile during registration
+class TempVeo(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    status = models.CharField(max_length=20)
+
+
+# Model for storing VEO Jihakiki complete profile
+class Veo(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    is_active = models.CharField(max_length=20)
+    verification_status = models.CharField(max_length=20)
+    weo_id = models.CharField(max_length=13, null=True)
+    date_weo_verified = models.DateTimeField(auto_now_add=True, null=True)
+
+
+# Model for storing WEO Jihakiki complete data
+class Weo(models.Model):
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    is_active = models.CharField(max_length=20)
+
+
+# Model for storing Barua from Mjumbe with no phone for Jihakiki data
+class Barua(models.Model):
+    id = models.AutoField(primary_key=True)
+    veo_id = models.CharField(max_length=13)
+    mwananchi_id = models.CharField(max_length=13, null=True)
+    reference = models.CharField(unique=True, max_length=200, null=True)
+    mjumbe_name = models.CharField(max_length=200, null=True)
+    shina = models.IntegerField(null=True)
+    kitongoji = models.CharField(max_length=200, null=True)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    date_created = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20)
+
+
+# Model for storing Msimbo (Auto Generated PIN) used in various verification processes
+class Pin(models.Model):
+    id = models.AutoField(primary_key=True)
+    pin = models.CharField(max_length=6)
+    generator_id = models.CharField(max_length=13)
+    client_id = models.CharField(max_length=13)
+    date_generated = models.DateTimeField(auto_now_add=True)
+    date_used = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20)
+
+
+# Model for storing keywords and messages that are sent back to users
+# when interacting with the system
+class KeywordMessage(models.Model):
     keyword = models.CharField(max_length=50)
-    statement = models.TextField()
-    steps = models.IntegerField()
+    message = models.TextField(max_length=918)
+    step = models.IntegerField()
