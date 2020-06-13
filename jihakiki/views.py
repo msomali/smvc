@@ -1,7 +1,9 @@
 # Test Telerivet Webhook API
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from .models import TempMwananchi, Mwananchi, KeywordMessage
+from .models import (TempMwananchi, TempMjumbe, TempVeo,
+                    Mwananchi, Mjumbe, Veo, Barua, Pin,
+                    KeywordMessage)
 from django.db.models import Q, F
 
 import json
@@ -53,13 +55,23 @@ def webhook(request):
         mncID = "MNC-"+postcode+"-"+str(randno)
         mjbID = "MJB-"+postcode+"-"+str(randno)
         veoID = "VEO-"+postcode+"-"+str(randno)
-        weoID = "WEO-"+postcode+"-"+str(randno)
         step = 1
 
         # Queries
+        # Mwananchi Queries
         qry_mwananchi = Mwananchi.objects.filter(phone__exact=from_number)
         qry_temp_mwananchi = TempMwananchi.objects.filter(phone__exact=from_number)
 
+        # Mjumbe Queries
+        qry_mjumbe = Mjumbe.objects.filter(phone__exact=from_number)
+        qry_temp_mjumbe = TempMjumbe.objects.filter(phone__exact=from_number)
+
+        # VEO Queries
+        qry_veo = Veo.objects.filter(phone__exact=from_number)
+        qry_temp_veo = TempVeo.objects.filter(phone__exact=from_number)
+
+
+        # Mwananchi Check Query
         if qry_mwananchi:
             qry_mwananchi = Mwananchi.objects.get(phone=from_number)
 
@@ -105,10 +117,20 @@ def webhook(request):
                 qry_temp_mwananchi.kata = content
                 qry_temp_mwananchi.step += 1
                 qry_temp_mwananchi.save()
+
             elif qry_temp_mwananchi.step==6:
-                qry_temp_mwananchi.id_card = content
-                qry_temp_mwananchi.step += 1
-                qry_temp_mwananchi.save()
+                # Check ID Name
+                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                    qry_temp_mwananchi.id_card = content
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kitambulisho uliloingiza sio sahihi. Vitambulisho vinavyokubalika ni NIDA, Kura na Leseni tu."}
+                        ]
+                    }), 'application/json')
+
             elif qry_temp_mwananchi.step==7:
 
                 # Check ID
@@ -132,7 +154,7 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
 
-                    # Send Data to Mwananchi Table (qry_tu/qry_mw)
+                    # Send Data to Mwananchi Table
                     qry_temp_mwananchi = TempMwananchi.objects.get(phone=from_number)
                     qry_mwananchi = Mwananchi.objects.create(
                                                         id=qry_temp_mwananchi.id,
@@ -150,13 +172,12 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from Temp User Table (qry_tu)
+                    # Delete Data from Temp User Table
                     qry_temp_mwananchi.delete()
 
                     # Send SMS to other person
                     message("Delivered", "+255715908000")
 
-                    # (qry_mw)
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Usajili wako wa awali umekamilika."+
@@ -188,12 +209,297 @@ def webhook(request):
                 ]
             }), 'application/json')
 
+
+        # Mjumbe Check Query
+        if qry_mjumbe:
+            qry_mjumbe = Mjumbe.objects.get(phone=from_number)
+
+            if qry_mjumbe.verification_status=="Unverified":
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mtendaji wako wa mtaa kwa uhakiki."}
+                    ]
+                }), 'application/json')
+
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Karibu JIHAKIKI: "+qry_mjumbe.name+"\n"+
+                                    "1. Wasifu wako.\n"+
+                                    "2. Mawasiliano ya uongozi wa mtaa/kijiji chako.\n"+
+                                    "3. Mawasiliano ya uongozi wa kata yako."
+                        }
+                    ]
+                }), 'application/json')
+
+        elif qry_temp_mjumbe:
+            qry_temp_mjumbe = TempMjumbe.objects.get(phone=from_number)
+
+            # Save Responses
+            if qry_temp_mjumbe.step==1:
+                qry_temp_mjumbe.name = content
+                qry_temp_mjumbe.step += 1
+                qry_temp_mjumbe.save()
+
+            elif qry_temp_mjumbe.step==2:
+
+                # Check Shina Length & Data Type
+                if len(content)<=3 and content.isdigit():
+                    qry_temp_mjumbe.shina = content
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya shina uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu zisizozidi 3 tu."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mjumbe.step==3:
+                qry_temp_mjumbe.kitongoji = content
+                qry_temp_mjumbe.step += 1
+                qry_temp_mjumbe.save()
+            elif qry_temp_mjumbe.step==4:
+                qry_temp_mjumbe.mtaa_kijiji = content
+                qry_temp_mjumbe.step += 1
+                qry_temp_mjumbe.save()
+            elif qry_temp_mjumbe.step==5:
+                qry_temp_mjumbe.kata = content
+                qry_temp_mjumbe.step += 1
+                qry_temp_mjumbe.save()
+
+            elif qry_temp_mjumbe.step==6:
+
+                # Check ID Name
+                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                    qry_temp_mjumbe.id_card = content
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kitambulisho uliloingiza sio sahihi. Vitambulisho vinavyokubalika ni NIDA, Kura na Leseni tu."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mjumbe.step==7:
+
+                # Check ID Number
+                if len(content)<=20 and content.isdigit():
+                    qry_temp_mjumbe.id_number = int(content)
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya kitambulisho uliyoingiza sio sahihi. Hakikisha unaingiza tarakimu pekee."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mjumbe.step==8:
+
+                # Check PIN Length & Data Type
+                if len(content)==4 and content.isdigit():
+                    qry_temp_mjumbe.pin = int(content)
+                    qry_temp_mjumbe.status = status_complete
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+
+                    # Send Data to Mjumbe Table
+                    qry_temp_mjumbe = TempMjumbe.objects.get(phone=from_number)
+                    qry_mjumbe = Mjumbe.objects.create(
+                                                        id=qry_temp_mjumbe.id,
+                                                        phone=qry_temp_mjumbe.phone,
+                                                        name=qry_temp_mjumbe.name,
+                                                        shina=qry_temp_mjumbe.shina,
+                                                        kitongoji=qry_temp_mjumbe.kitongoji,
+                                                        mtaa_kijiji=qry_temp_mjumbe.mtaa_kijiji,
+                                                        kata=qry_temp_mjumbe.kata,
+                                                        id_card=qry_temp_mjumbe.id_card,
+                                                        id_number=qry_temp_mjumbe.id_number,
+                                                        pin=qry_temp_mjumbe.pin,
+                                                        step=step,
+                                                        is_active=is_active,
+                                                        verification_status=status_unverified
+                                                    )
+
+                    # Delete Data from Temp User Table
+                    qry_temp_mjumbe.delete()
+
+                    # Send SMS to other person
+                    message("Delivered", "+255715908000")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Usajili wako wa awali umekamilika."+
+                                        "Nambari yako ya usajili ni "+qry_mjumbe.id+
+                                        ".\n\n"+
+                                        "Tafadhali wasiliana na mtendaji wako kwa uhakiki."
+                                        }
+                        ]
+                    }), 'application/json')
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                        ]
+                    }), 'application/json')
+
+            else:
+                # To be replaced by pass
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Invalid Step! Contact System Admin!"}
+                    ]
+                }), 'application/json')
+
+            qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
+
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': qry_keyword_message.message}
+                ]
+            }), 'application/json')
+
+
+        # VEO Check Query
+        if qry_veo:
+            qry_veo = Veo.objects.get(phone=from_number)
+
+            if qry_veo.verification_status=="Unverified":
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mtendaji wako wa kata kwa uhakiki."}
+                    ]
+                }), 'application/json')
+
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Karibu JIHAKIKI: "+qry_veo.name+"\n"+
+                                    "1. Wasifu wako.\n"+
+                                    "2. Mawasiliano ya uongozi wa kijiji/kitongoji chako.\n"+
+                                    "3. Mawasiliano ya uongozi wa kata yako."
+                        }
+                    ]
+                }), 'application/json')
+
+        elif qry_temp_veo:
+            qry_temp_veo = TempVeo.objects.get(phone=from_number)
+
+            # Save Responses
+            if qry_temp_veo.step==1:
+                qry_temp_veo.name = content
+                qry_temp_veo.step += 1
+                qry_temp_veo.save()
+            elif qry_temp_veo.step==2:
+                qry_temp_veo.mtaa_kijiji = content
+                qry_temp_veo.step += 1
+                qry_temp_veo.save()
+            elif qry_temp_veo.step==3:
+                qry_temp_veo.kata = content
+                qry_temp_veo.step += 1
+                qry_temp_veo.save()
+
+            elif qry_temp_veo.step==4:
+
+                # Check ID Name
+                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                    qry_temp_veo.id_card = content
+                    qry_temp_veo.step += 1
+                    qry_temp_veo.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kitambulisho uliloingiza sio sahihi. Vitambulisho vinavyokubalika ni NIDA, Kura na Leseni tu."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_veo.step==5:
+
+                # Check ID
+                if len(content)<=20 and content.isdigit():
+                    qry_temp_veo.id_number = int(content)
+                    qry_temp_veo.step += 1
+                    qry_temp_veo.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya kitambulisho uliyoingiza sio sahihi. Hakikisha unaingiza tarakimu pekee."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_veo.step==6:
+
+                # Check PIN Length & Data Type
+                if len(content)==4 and content.isdigit():
+                    qry_temp_veo.pin = int(content)
+                    qry_temp_veo.status = status_complete
+                    qry_temp_veo.step += 1
+                    qry_temp_veo.save()
+
+                    # Send Data to Veo Table
+                    qry_temp_veo = TempVeo.objects.get(phone=from_number)
+                    qry_veo = Veo.objects.create(
+                                                        id=qry_temp_veo.id,
+                                                        phone=qry_temp_veo.phone,
+                                                        name=qry_temp_veo.name,
+                                                        mtaa_kijiji=qry_temp_veo.mtaa_kijiji,
+                                                        kata=qry_temp_veo.kata,
+                                                        id_card=qry_temp_veo.id_card,
+                                                        id_number=qry_temp_veo.id_number,
+                                                        pin=qry_temp_veo.pin,
+                                                        step=step,
+                                                        is_active=is_active,
+                                                        verification_status=status_unverified
+                                                    )
+
+                    # Delete Data from Temp User Table
+                    qry_temp_veo.delete()
+
+                    # Send SMS to other person
+                    message("Delivered", "+255715908000")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Usajili wako wa awali umekamilika."+
+                                        "Nambari yako ya usajili ni "+qry_veo.id+
+                                        ".\n\n"+
+                                        "Tafadhali wasiliana na mjumbe wako kwa uhakiki."
+                                        }
+                        ]
+                    }), 'application/json')
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                        ]
+                    }), 'application/json')
+
+            else:
+                # To be replaced by pass
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Invalid Step! Contact System Admin!"}
+                    ]
+                }), 'application/json')
+
+            qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
+
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': qry_keyword_message.message}
+                ]
+            }), 'application/json')
+
+
+        # New account creation for Mwananchi, Mjumbe & VEO
         else:
             # Capture Jihakiki Keyword
             keyword = content.split(' ', maxsplit=1)
 
+            # Create Mwananchi Jihakiki Profile
             if keyword[0] in ["Jihakiki", "jihakiki", "JIHAKIKI"]:
-                # (qryy/qryy)
                 qry_temp_mwananchi = TempMwananchi.objects.create(
                                                 id=mncID,
                                                 phone=from_number,
@@ -202,7 +508,7 @@ def webhook(request):
                                             )
                 qry_temp_mwananchi.save()
 
-                # Query the Respective Message (qryy)
+                # Query the Respective Message
                 qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
 
                 return HttpResponse(json.dumps({
@@ -211,6 +517,49 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+            # Create Mjumbe Jihakiki Profile
+            elif keyword[0] in ["Mjumbe", "mjumbe", "MJUMBE"]:
+                qry_temp_mjumbe = TempMjumbe.objects.create(
+                                                id=mncID,
+                                                phone=from_number,
+                                                step=step,
+                                                status=status_partial
+                                            )
+                qry_temp_mjumbe.save()
+
+                # Query the Respective Message
+                qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
+
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': qry_keyword_message.message}
+                    ]
+                }), 'application/json')
+
+            # Create Veo Jihakiki Profile
+            elif keyword[0] in ["Veo", "veo", "VEO"]:
+                qry_temp_veo = TempVeo.objects.create(
+                                                id=mncID,
+                                                phone=from_number,
+                                                step=step,
+                                                status=status_partial
+                                            )
+                qry_temp_veo.save()
+
+                # Query the Respective Message
+                qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
+
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': qry_keyword_message.message}
+                    ]
+                }), 'application/json')
+
+            else:
+                # If no keywords were valid
+                pass
+
+        # To be replace by else pass for non keyword messages
         return HttpResponse(json.dumps({
             'messages': [
                 {'content': "Thanks for your message!"}
