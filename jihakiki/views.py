@@ -63,7 +63,7 @@ def webhook(request):
         if qry_mwananchi:
             qry_mwananchi = Mwananchi.objects.get(phone=from_number)
 
-            if qry_mwananchi.status=="Unverified":
+            if qry_mwananchi.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
                     'messages': [
                         {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mjumbe au mtendaji wako kwa uhakiki."}
