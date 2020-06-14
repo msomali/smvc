@@ -56,6 +56,11 @@ def webhook(request):
         mjbID = "MJB-"+postcode+"-"+str(randno)
         veoID = "VEO-"+postcode+"-"+str(randno)
         step = 1
+        project = "Jihakiki"
+        service = "Usajili"
+        member_mwananchi = "Mwananchi"
+        member_mjumbe = "Mjumbe"
+        member_mtendaji = "Mtendaji"
 
         # Queries
         # Mwananchi Queries
@@ -120,7 +125,7 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==6:
                 # Check ID Name
-                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_mwananchi.id_card = content
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
@@ -202,6 +207,9 @@ def webhook(request):
                 }), 'application/json')
 
             qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
+            qry_keyword_message = qry_keyword_message.get(step=project)
+            qry_keyword_message = qry_keyword_message.get(step=service)
+            qry_keyword_message = qry_keyword_message.get(step=member_mwananchi)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -271,7 +279,7 @@ def webhook(request):
             elif qry_temp_mjumbe.step==6:
 
                 # Check ID Name
-                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_mjumbe.id_card = content
                     qry_temp_mjumbe.step += 1
                     qry_temp_mjumbe.save()
@@ -354,6 +362,9 @@ def webhook(request):
                 }), 'application/json')
 
             qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
+            qry_keyword_message = qry_keyword_message.get(step=project)
+            qry_keyword_message = qry_keyword_message.get(step=service)
+            qry_keyword_message = qry_keyword_message.get(step=member_mjumbe)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -404,7 +415,7 @@ def webhook(request):
             elif qry_temp_veo.step==4:
 
                 # Check ID Name
-                if content in ["NIDA", "KURA", "LESENI", "Nida", "Kura", "Leseni", "nida", "kura", "leseni"]:
+                if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_veo.id_card = content
                     qry_temp_veo.step += 1
                     qry_temp_veo.save()
@@ -485,6 +496,9 @@ def webhook(request):
                 }), 'application/json')
 
             qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
+            qry_keyword_message = qry_keyword_message.get(step=project)
+            qry_keyword_message = qry_keyword_message.get(step=service)
+            qry_keyword_message = qry_keyword_message.get(step=member_mtendaji)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -499,7 +513,7 @@ def webhook(request):
             keyword = content.split(' ', maxsplit=1)
 
             # Create Mwananchi Jihakiki Profile
-            if keyword[0] in ["Jihakiki", "jihakiki", "JIHAKIKI"]:
+            if keyword[0].upper()=="JIHAKIKI":
                 qry_temp_mwananchi = TempMwananchi.objects.create(
                                                 id=mncID,
                                                 phone=from_number,
@@ -518,7 +532,7 @@ def webhook(request):
                 }), 'application/json')
 
             # Create Mjumbe Jihakiki Profile
-            elif keyword[0] in ["Mjumbe", "mjumbe", "MJUMBE"]:
+            elif keyword[0].upper()=="MJUMBE":
                 qry_temp_mjumbe = TempMjumbe.objects.create(
                                                 id=mncID,
                                                 phone=from_number,
@@ -537,7 +551,7 @@ def webhook(request):
                 }), 'application/json')
 
             # Create Veo Jihakiki Profile
-            elif keyword[0] in ["Veo", "veo", "VEO"]:
+            elif keyword[0].upper()=="MTENDAJI":
                 qry_temp_veo = TempVeo.objects.create(
                                                 id=mncID,
                                                 phone=from_number,

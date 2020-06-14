@@ -139,7 +139,6 @@ class Weo(models.Model):
 
 # Model for storing Barua from Mjumbe with no phone for Jihakiki data
 class Barua(models.Model):
-    # id = models.AutoField(primary_key=True)
     veo_id = models.CharField(max_length=13)
     mwananchi_id = models.CharField(max_length=13, null=True)
     reference = models.CharField(unique=True, max_length=200, null=True)
@@ -154,7 +153,6 @@ class Barua(models.Model):
 
 # Model for storing Msimbo (Auto Generated PIN) used in various verification processes
 class Pin(models.Model):
-    # id = models.AutoField(primary_key=True)
     pin = models.CharField(max_length=6)
     generator_id = models.CharField(max_length=13)
     client_id = models.CharField(max_length=13)
@@ -169,3 +167,11 @@ class KeywordMessage(models.Model):
     keyword = models.CharField(max_length=50)
     message = models.TextField(max_length=918)
     step = models.IntegerField()
+    project = models.CharField(max_length=20)
+    service = models.CharField(max_length=20)
+    member = models.CharField(max_length=20)
+
+
+# In the future tables, KeywordMessage(for messages) and Project(Table for project & Services)
+# KeywordMessage to include FK from Project
+# Project to include project_name, service_name, owner(driver), member(mwananchi, mjumbe, veo, weo)
