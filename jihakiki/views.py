@@ -206,10 +206,10 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
-            qry_keyword_message = qry_keyword_message.get(step=project)
-            qry_keyword_message = qry_keyword_message.get(step=service)
-            qry_keyword_message = qry_keyword_message.get(step=member_mwananchi)
+            qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mwananchi.step)
+            qry_keyword_message = qry_keyword_message.filter(project=project)
+            qry_keyword_message = qry_keyword_message.filter(service=service)
+            qry_keyword_message = qry_keyword_message.get(member=member_mwananchi)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -361,10 +361,10 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
-            qry_keyword_message = qry_keyword_message.get(step=project)
-            qry_keyword_message = qry_keyword_message.get(step=service)
-            qry_keyword_message = qry_keyword_message.get(step=member_mjumbe)
+            qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mjumbe.step)
+            qry_keyword_message = qry_keyword_message.filter(project=project)
+            qry_keyword_message = qry_keyword_message.filter(service=service)
+            qry_keyword_message = qry_keyword_message.get(member=member_mjumbe)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -495,10 +495,10 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
-            qry_keyword_message = qry_keyword_message.get(step=project)
-            qry_keyword_message = qry_keyword_message.get(step=service)
-            qry_keyword_message = qry_keyword_message.get(step=member_mtendaji)
+            qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_veo.step)
+            qry_keyword_message = qry_keyword_message.filter(project=project)
+            qry_keyword_message = qry_keyword_message.filter(service=service)
+            qry_keyword_message = qry_keyword_message.get(member=member_mtendaji)
 
             return HttpResponse(json.dumps({
                 'messages': [
@@ -545,10 +545,10 @@ def webhook(request):
                 qry_temp_mjumbe.save()
 
                 # Query the Respective Message
-                qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
-                qry_keyword_message = qry_keyword_message.get(step=project)
-                qry_keyword_message = qry_keyword_message.get(step=service)
-                qry_keyword_message = qry_keyword_message.get(step=member_mjumbe)
+                qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mjumbe.step)
+                qry_keyword_message = qry_keyword_message.filter(project=project)
+                qry_keyword_message = qry_keyword_message.filter(service=service)
+                qry_keyword_message = qry_keyword_message.get(member=member_mjumbe)
 
                 return HttpResponse(json.dumps({
                     'messages': [
@@ -567,10 +567,10 @@ def webhook(request):
                 qry_temp_veo.save()
 
                 # Query the Respective Message
-                qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
-                qry_keyword_message = qry_keyword_message.get(step=project)
-                qry_keyword_message = qry_keyword_message.get(step=service)
-                qry_keyword_message = qry_keyword_message.get(step=member_mtendaji)
+                qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_veo.step)
+                qry_keyword_message = qry_keyword_message.filter(project=project)
+                qry_keyword_message = qry_keyword_message.filter(service=service)
+                qry_keyword_message = qry_keyword_message.get(member=member_mtendaji)
 
                 return HttpResponse(json.dumps({
                     'messages': [
