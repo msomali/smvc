@@ -537,7 +537,7 @@ def webhook(request):
             # Create Mjumbe Jihakiki Profile
             elif keyword[0].upper()=="MJUMBE":
                 qry_temp_mjumbe = TempMjumbe.objects.create(
-                                                id=mncID,
+                                                id=mjbID,
                                                 phone=from_number,
                                                 step=step,
                                                 status=status_partial
@@ -559,7 +559,7 @@ def webhook(request):
             # Create Veo Jihakiki Profile
             elif keyword[0].upper()=="MTENDAJI":
                 qry_temp_veo = TempVeo.objects.create(
-                                                id=mncID,
+                                                id=veoID,
                                                 phone=from_number,
                                                 step=step,
                                                 status=status_partial
