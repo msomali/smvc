@@ -157,6 +157,8 @@ class Pin(models.Model):
     generator_id = models.CharField(max_length=13)
     client_id = models.CharField(max_length=13)
     date_generated = models.DateTimeField(auto_now_add=True)
+    project = models.CharField(max_length=20)
+    service = models.CharField(max_length=20)
     date_used = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20)
 
@@ -170,8 +172,3 @@ class KeywordMessage(models.Model):
     project = models.CharField(max_length=20)
     service = models.CharField(max_length=20)
     member = models.CharField(max_length=20)
-
-
-# In the future tables, KeywordMessage(for messages) and Project(Table for project & Services)
-# KeywordMessage to include FK from Project
-# Project to include project_name, service_name, owner(driver), member(mwananchi, mjumbe, veo, weo)
