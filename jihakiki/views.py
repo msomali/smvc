@@ -524,6 +524,9 @@ def webhook(request):
 
                 # Query the Respective Message
                 qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
+                qry_keyword_message = qry_keyword_message.get(step=project)
+                qry_keyword_message = qry_keyword_message.get(step=service)
+                qry_keyword_message = qry_keyword_message.get(step=member_mwananchi)
 
                 return HttpResponse(json.dumps({
                     'messages': [
@@ -543,6 +546,9 @@ def webhook(request):
 
                 # Query the Respective Message
                 qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mjumbe.step)
+                qry_keyword_message = qry_keyword_message.get(step=project)
+                qry_keyword_message = qry_keyword_message.get(step=service)
+                qry_keyword_message = qry_keyword_message.get(step=member_mjumbe)
 
                 return HttpResponse(json.dumps({
                     'messages': [
@@ -562,6 +568,9 @@ def webhook(request):
 
                 # Query the Respective Message
                 qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_veo.step)
+                qry_keyword_message = qry_keyword_message.get(step=project)
+                qry_keyword_message = qry_keyword_message.get(step=service)
+                qry_keyword_message = qry_keyword_message.get(step=member_mtendaji)
 
                 return HttpResponse(json.dumps({
                     'messages': [
