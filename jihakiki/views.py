@@ -524,9 +524,9 @@ def webhook(request):
 
                 # Query the Respective Message
                 qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
-                qry_keyword_message = qry_keyword_message.get(step=project)
-                qry_keyword_message = qry_keyword_message.get(step=service)
-                qry_keyword_message = qry_keyword_message.get(step=member_mwananchi)
+                qry_keyword_message = qry_keyword_message.get(project=project)
+                qry_keyword_message = qry_keyword_message.get(service=service)
+                qry_keyword_message = qry_keyword_message.get(member=member_mwananchi)
 
                 return HttpResponse(json.dumps({
                     'messages': [
