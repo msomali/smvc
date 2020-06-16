@@ -491,7 +491,7 @@ def webhook(request):
                 # To be replaced by pass
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Invalid Step! Contact System Admin!"}
+                        {'content': "Invalid Step! Contact System Administrator!"}
                     ]
                 }), 'application/json')
 
