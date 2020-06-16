@@ -523,10 +523,10 @@ def webhook(request):
                 qry_temp_mwananchi.save()
 
                 # Query the Respective Message
-                qry_keyword_message = KeywordMessage.objects.get(step=qry_temp_mwananchi.step)
-                qry_keyword_message = qry_keyword_message.get(project=project)
-                qry_keyword_message = qry_keyword_message.get(service=service)
-                qry_keyword_message = qry_keyword_message.get(member=member_mwananchi)
+                qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mwananchi.step)
+                qry_keyword_message = qry_keyword_message.filter(project=project)
+                qry_keyword_message = qry_keyword_message.filter(service=service)
+                qry_keyword_message = qry_keyword_message.filter(member=member_mwananchi)
 
                 return HttpResponse(json.dumps({
                     'messages': [
