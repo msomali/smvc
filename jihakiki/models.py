@@ -17,6 +17,7 @@ class ReceivedMessages(models.Model):
 
 # Model for holding Mwananchi Jihakiki profile during registration
 class TempMwananchi(models.Model):
+    """Model for holding Mwananchi Jihakiki profile during registration"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200, null=True)
@@ -34,6 +35,7 @@ class TempMwananchi(models.Model):
 
 # Model for storing Mwananchi Jihakiki complete profile
 class Mwananchi(models.Model):
+    """Model for storing Mwananchi Jihakiki complete profile"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200)
@@ -57,6 +59,7 @@ class Mwananchi(models.Model):
 
 # Model for holding Mjumbe Jihakiki profile during registration
 class TempMjumbe(models.Model):
+    """Model for holding Mjumbe Jihakiki profile during registration"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200, null=True)
@@ -73,6 +76,7 @@ class TempMjumbe(models.Model):
 
 # Model for storing Mjumbe Jihakiki complete profile
 class Mjumbe(models.Model):
+    """Model for storing Mjumbe Jihakiki complete profile"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200)
@@ -93,6 +97,7 @@ class Mjumbe(models.Model):
 
 # Model for holding VEO Jihakiki profile during registration
 class TempVeo(models.Model):
+    """Model for holding VEO Jihakiki profile during registration"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200, null=True)
@@ -108,6 +113,7 @@ class TempVeo(models.Model):
 
 # Model for storing VEO Jihakiki complete profile
 class Veo(models.Model):
+    """Model for storing VEO Jihakiki complete profile"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200)
@@ -126,6 +132,7 @@ class Veo(models.Model):
 
 # Model for storing WEO Jihakiki complete data
 class Weo(models.Model):
+    """Model for storing WEO Jihakiki complete data"""
     id = models.CharField(primary_key=True, max_length=13)
     phone = models.CharField(unique=True, max_length=13)
     name = models.CharField(max_length=200)
@@ -139,6 +146,7 @@ class Weo(models.Model):
 
 # Model for storing Barua from Mjumbe with no phone for Jihakiki data
 class Barua(models.Model):
+    """Model for storing Barua from Mjumbe with no phone for Jihakiki data"""
     veo_id = models.CharField(max_length=13)
     mwananchi_id = models.CharField(max_length=13, null=True)
     reference = models.CharField(unique=True, max_length=200, null=True)
@@ -153,6 +161,7 @@ class Barua(models.Model):
 
 # Model for storing Msimbo (Auto Generated PIN) used in various verification processes
 class Pin(models.Model):
+    """Model for storing Msimbo (Auto Generated PIN) used in various verification processes"""
     pin = models.CharField(max_length=6)
     generator_id = models.CharField(max_length=13)
     client_id = models.CharField(max_length=13)
@@ -164,11 +173,31 @@ class Pin(models.Model):
 
 
 # Model for storing keywords and messages that are sent back to users
-# when interacting with the system
+# when interacting with the system. All the questions.
 class KeywordMessage(models.Model):
+    """
+    Model for storing conversation, flag, validation, and success messages
+    that are sent back to users when interacting with the system.
+    """
     keyword = models.CharField(max_length=50)
+    message_type = models.CharField(max_length=50)
     message = models.TextField(max_length=918)
     step = models.IntegerField()
     project = models.CharField(max_length=20)
     service = models.CharField(max_length=20)
     member = models.CharField(max_length=20)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+
+# Model for storing all postal code including wards, villages/streets and vitongoji
+class PostCode(models.Model):
+    """Model for storing all postal codes including wards, mtaa/vijiji and vitongoji"""
+    council_postcode = models.IntegerField()
+    district = models.CharField(max_length=200)
+    district_postcode = models.CharField(max_length=200)
+    ward = models.CharField(max_length=200)
+    ward_postcode = models.CharField(max_length=200)
+    old_ward_postcode = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kitongoji = models.CharField(max_length=200)
+    date_created = models.DateTimeField(auto_now_add=True)

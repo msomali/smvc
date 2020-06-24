@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from .models import (TempMwananchi, TempMjumbe, TempVeo,
                     Mwananchi, Mjumbe, Veo, Barua, Pin,
-                    KeywordMessage)
+                    KeywordMessage, PostCode)
 from django.db.models import Q, F
 
 import json
@@ -61,6 +61,7 @@ def webhook(request):
         member_mwananchi = "Mwananchi"
         member_mjumbe = "Mjumbe"
         member_mtendaji = "Mtendaji"
+        message_type = "Convo"
 
         # Queries
         # Mwananchi Queries
@@ -110,18 +111,52 @@ def webhook(request):
                 qry_temp_mwananchi.occupation = content
                 qry_temp_mwananchi.step += 1
                 qry_temp_mwananchi.save()
+
             elif qry_temp_mwananchi.step==3:
-                qry_temp_mwananchi.kitongoji = content
-                qry_temp_mwananchi.step += 1
-                qry_temp_mwananchi.save()
+                # Check Kitongoji
+                qry_kitongoji = PostCode.objects.get(kitongoji__iexact=content)
+                if qry_kitongoji:
+                    qry_temp_mwananchi.kitongoji = content
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    qry_possible_kitongoji = PostCode.objects.get(kitongoji__icontains=content)
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': qry_possible_kitongoji}
+                        ]
+                    }), 'application/json')
+
+
             elif qry_temp_mwananchi.step==4:
-                qry_temp_mwananchi.mtaa_kijiji = content
-                qry_temp_mwananchi.step += 1
-                qry_temp_mwananchi.save()
+                # Check Mtaa/Kijiji
+                qry_mtaa_kijiji = PostCode.objects.get(mtaa_kijiji__iexact=content)
+                if qry_mtaa_kijiji:
+                    qry_temp_mwananchi.mtaa_kijiji = content
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    qry_possible_mtaa_kijiji = PostCode.objects.get(mtaa_kijiji__icontains=content)
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': qry_possible_mtaa_kijiji}
+                        ]
+                    }), 'application/json')
+
             elif qry_temp_mwananchi.step==5:
-                qry_temp_mwananchi.kata = content
-                qry_temp_mwananchi.step += 1
-                qry_temp_mwananchi.save()
+                 # Check Ward
+                qry_ward = PostCode.objects.get(ward__iexact=content)
+                if qry_ward:
+                    qry_temp_mwananchi.kata = content
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    qry_possible_ward = PostCode.objects.get(ward__icontains=content)
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': qry_possible_ward}
+                        ]
+                    }), 'application/json')
 
             elif qry_temp_mwananchi.step==6:
                 # Check ID Name
@@ -209,7 +244,8 @@ def webhook(request):
             qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mwananchi.step)
             qry_keyword_message = qry_keyword_message.filter(project=project)
             qry_keyword_message = qry_keyword_message.filter(service=service)
-            qry_keyword_message = qry_keyword_message.get(member=member_mwananchi)
+            qry_keyword_message = qry_keyword_message.filter(member=member_mwananchi)
+            qry_keyword_message = qry_keyword_message.get(message_type=message_type)
 
             return HttpResponse(json.dumps({
                 'messages': [
