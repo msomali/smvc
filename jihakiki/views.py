@@ -113,6 +113,36 @@ def webhook(request):
                 qry_temp_mwananchi.save()
 
             elif qry_temp_mwananchi.step==3:
+                # Check Ward
+                qry_ward = PostCode.objects.get(ward__exact=content.title())
+                if qry_ward:
+                    qry_temp_mwananchi.kata = content.title()
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    qry_possible_ward = PostCode.objects.filter(ward__icontains=content)
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': qry_possible_ward}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwananchi.step==4:
+                # Check Mtaa/Kijiji
+                qry_mtaa_kijiji = PostCode.objects.get(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.ward)
+                if qry_mtaa_kijiji:
+                    qry_temp_mwananchi.mtaa_kijiji = content.title()
+                    qry_temp_mwananchi.step += 1
+                    qry_temp_mwananchi.save()
+                else:
+                    qry_possible_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__icontains=content, ward__icontains=qry_temp_mwananchi.ward)
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': qry_possible_mtaa_kijiji}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwananchi.step==5:
                 # Check Kitongoji
                 qry_kitongoji = PostCode.objects.get(kitongoji__iexact=content)
                 if qry_kitongoji:
@@ -124,37 +154,6 @@ def webhook(request):
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': qry_possible_kitongoji}
-                        ]
-                    }), 'application/json')
-
-
-            elif qry_temp_mwananchi.step==4:
-                # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.get(mtaa_kijiji__iexact=content)
-                if qry_mtaa_kijiji:
-                    qry_temp_mwananchi.mtaa_kijiji = content
-                    qry_temp_mwananchi.step += 1
-                    qry_temp_mwananchi.save()
-                else:
-                    qry_possible_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__icontains=content)
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': qry_possible_mtaa_kijiji}
-                        ]
-                    }), 'application/json')
-
-            elif qry_temp_mwananchi.step==5:
-                 # Check Ward
-                qry_ward = PostCode.objects.get(ward__iexact=content)
-                if qry_ward:
-                    qry_temp_mwananchi.kata = content
-                    qry_temp_mwananchi.step += 1
-                    qry_temp_mwananchi.save()
-                else:
-                    qry_possible_ward = PostCode.objects.filter(ward__icontains=content)
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': qry_possible_ward}
                         ]
                     }), 'application/json')
 
