@@ -114,7 +114,7 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==3:
                 # Check Ward
-                qry_ward = PostCode.objects.get(ward__exact=content.title()).distinct()
+                qry_ward = PostCode.objects.get(ward__exact=content.title()).distinct(content.title())
                 if qry_ward:
                     qry_temp_mwananchi.kata = content.title()
                     qry_temp_mwananchi.step += 1
