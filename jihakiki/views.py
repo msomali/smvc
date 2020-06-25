@@ -120,7 +120,7 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_kitongoji = PostCode.objects.get(kitongoji__icontains=content)
+                    qry_possible_kitongoji = PostCode.objects.filter(kitongoji__icontains=content)
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': qry_possible_kitongoji}
@@ -136,7 +136,7 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_mtaa_kijiji = PostCode.objects.get(mtaa_kijiji__icontains=content)
+                    qry_possible_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__icontains=content)
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': qry_possible_mtaa_kijiji}
@@ -151,7 +151,7 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_ward = PostCode.objects.get(ward__icontains=content)
+                    qry_possible_ward = PostCode.objects.filter(ward__icontains=content)
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': qry_possible_ward}
