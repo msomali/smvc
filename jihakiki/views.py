@@ -221,7 +221,7 @@ def webhook(request):
                     # qry_mwenyekiti = Mwenyekiti.objects.filter(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, is_active__exact="Yes")
                     # qry_mwenyekiti = qry_mwenyekiti.get(verification_status__exact="Verified")
 
-                    message_to_mwenyekiti = "Habari "+qry_mwenyekiti.name+", mwananchi huyu amekamilisha usajili katika mtaa wako." \
+                    message_to_mwenyekiti = "Habari , mwananchi huyu amekamilisha usajili katika mtaa wako." \
                         "Namba ya Usajili: "+qry_mwananchi.id+"." \
                             "Jina: "+qry_mwananchi.name+"." \
                                 "Kata: "+qry_mwananchi.kata+"." \
