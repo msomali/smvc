@@ -1,8 +1,8 @@
 # Test Telerivet Webhook API
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from .models import (TempMwananchi, TempMjumbe, TempVeo,
-                    Mwananchi, Mjumbe, Veo, Barua, Pin,
+from .models import (TempMwananchi, TempMjumbe, TempMwenyekiti, TempVeo,
+                    Mwananchi, Mjumbe, Mwenyekiti, Veo, Barua, Pin,
                     KeywordMessage, PostCode)
 from django.db.models import Q, F
 
@@ -54,12 +54,14 @@ def webhook(request):
         is_active = "Yes"
         mncID = "MNC-"+postcode+"-"+str(randno)
         mjbID = "MJB-"+postcode+"-"+str(randno)
+        mktID = "MKT-"+postcode+"-"+str(randno)
         veoID = "VEO-"+postcode+"-"+str(randno)
         step = 1
         project = "Jihakiki"
         service = "Usajili"
         member_mwananchi = "Mwananchi"
         member_mjumbe = "Mjumbe"
+        member_mwenyekiti = "Mwenyekiti"
         member_mtendaji = "Mtendaji"
         message_type = "Convo"
 
@@ -71,6 +73,10 @@ def webhook(request):
         # Mjumbe Queries
         qry_mjumbe = Mjumbe.objects.filter(phone__exact=from_number)
         qry_temp_mjumbe = TempMjumbe.objects.filter(phone__exact=from_number)
+
+        # Mwenyekiti Queries
+        qry_mwenyekiti = Mwenyekiti.objects.filter(phone__exact=from_number)
+        qry_temp_mwenyekiti = TempMwenyekiti.objects.filter(phone__exact=from_number)
 
         # VEO Queries
         qry_veo = Veo.objects.filter(phone__exact=from_number)
@@ -84,7 +90,7 @@ def webhook(request):
             if qry_mwananchi.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mjumbe au mtendaji wako kwa uhakiki."}
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mjumbe wako wa shina au afisa mtendaji wako wa mtaa kwa uhakiki."}
                     ]
                 }), 'application/json')
 
@@ -211,15 +217,25 @@ def webhook(request):
                     # Delete Data from Temp User Table
                     qry_temp_mwananchi.delete()
 
-                    # Send SMS to other person
-                    message("Delivered", "+255715908000")
+                    # Notify Mwenyekiti via SMS completion of Mwananchi registration
+                    # qry_mwenyekiti = Mwenyekiti.objects.filter(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, is_active__exact="Yes")
+                    # qry_mwenyekiti = qry_mwenyekiti.get(verification_status__exact="Verified")
+
+                    message_to_mwenyekiti = "Habari "+qry_mwenyekiti.name+", mwananchi huyu amekamilisha usajili katika mtaa wako." \
+                        "Namba ya Usajili: "+qry_mwananchi.id+"." \
+                            "Jina: "+qry_mwananchi.name+"." \
+                                "Kata: "+qry_mwananchi.kata+"." \
+                                    "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"." \
+                                        "Kitongoji: "+qry_mwananchi.kitongoji+"."
+
+                    message(message_to_mwenyekiti, "+255715908000")
 
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Usajili wako wa awali umekamilika."+
                                         "Nambari yako ya usajili ni "+qry_mwananchi.id+
                                         ".\n\n"+
-                                        "Tafadhali wasiliana na mjumbe wako kwa uhakiki."
+                                        "Tafadhali wasiliana na mjumbe wako wa shina kwa uhakiki."
                                         }
                         ]
                     }), 'application/json')
@@ -257,7 +273,7 @@ def webhook(request):
             if qry_mjumbe.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mtendaji wako wa mtaa kwa uhakiki."}
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na afisa mtendaji wako wa mtaa kwa uhakiki."}
                     ]
                 }), 'application/json')
 
@@ -277,7 +293,7 @@ def webhook(request):
 
             # Save Responses
             if qry_temp_mjumbe.step==1:
-                qry_temp_mjumbe.name = content
+                qry_temp_mjumbe.name = content.title()
                 qry_temp_mjumbe.step += 1
                 qry_temp_mjumbe.save()
 
@@ -296,23 +312,52 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mjumbe.step==3:
-                qry_temp_mjumbe.kitongoji = content
-                qry_temp_mjumbe.step += 1
-                qry_temp_mjumbe.save()
+                # Check Ward
+                qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
+                if qry_ward:
+                    qry_temp_mjumbe.kata = content.title()
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kata uliloingiza halipo. Hakikisha jina la kata na urudie tena."}
+                        ]
+                    }), 'application/json')
+
             elif qry_temp_mjumbe.step==4:
-                qry_temp_mjumbe.mtaa_kijiji = content
-                qry_temp_mjumbe.step += 1
-                qry_temp_mjumbe.save()
+                # Check Mtaa/Kijiji
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                if qry_mtaa_kijiji:
+                    qry_temp_mjumbe.mtaa_kijiji = content.title()
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la mtaa/kijiji uliloingiza halipo. Hakikisha jina la mtaa/kijiji na urudie tena."}
+                        ]
+                    }), 'application/json')
+
             elif qry_temp_mjumbe.step==5:
-                qry_temp_mjumbe.kata = content
-                qry_temp_mjumbe.step += 1
-                qry_temp_mjumbe.save()
+                # Check Kitongoji
+                qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mwananchi.mtaa_kijiji, ward__exact=qry_temp_mwananchi.kata).distinct()
+                if qry_kitongoji:
+                    qry_temp_mjumbe.kitongoji = content.title()
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kitongoji uliloingiza halipo. Hakikisha jina la kitongoji na urudie tena."}
+                        ]
+                    }), 'application/json')
 
             elif qry_temp_mjumbe.step==6:
 
                 # Check ID Name
                 if content.upper() in ["NIDA", "KURA", "LESENI"]:
-                    qry_temp_mjumbe.id_card = content
+                    qry_temp_mjumbe.id_card = content.title()
                     qry_temp_mjumbe.step += 1
                     qry_temp_mjumbe.save()
                 else:
@@ -374,7 +419,7 @@ def webhook(request):
                             {'content': "Usajili wako wa awali umekamilika."+
                                         "Nambari yako ya usajili ni "+qry_mjumbe.id+
                                         ".\n\n"+
-                                        "Tafadhali wasiliana na mtendaji wako kwa uhakiki."
+                                        "Tafadhali wasiliana na afisa mtendaji wako wa mtaa kwa uhakiki."
                                         }
                         ]
                     }), 'application/json')
@@ -405,6 +450,160 @@ def webhook(request):
             }), 'application/json')
 
 
+        # Mwenyekiti Check Query
+        if qry_mwenyekiti:
+            qry_mwenyekiti = Mwenyekiti.objects.get(phone=from_number)
+
+            if qry_mwenyekiti.verification_status=="Unverified":
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na afisa mtendaji wako wa kata kwa uhakiki."}
+                    ]
+                }), 'application/json')
+
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Karibu JIHAKIKI: "+qry_mwenyekiti.name+"\n"+
+                                    "1. Wasifu wako.\n"+
+                                    "2. Mawasiliano ya uongozi wa kijiji/kitongoji chako.\n"+
+                                    "3. Mawasiliano ya uongozi wa kata yako."
+                        }
+                    ]
+                }), 'application/json')
+
+        elif qry_temp_mwenyekiti:
+            qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
+
+            # Save Responses
+            if qry_temp_mwenyekiti.step==1:
+                qry_temp_mwenyekiti.name = content.title()
+                qry_temp_mwenyekiti.step += 1
+                qry_temp_mwenyekiti.save()
+
+            elif qry_temp_mwenyekiti.step==2:
+                # Check Ward
+                qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
+                if qry_ward:
+                    qry_temp_mwenyekiti.kata = content.title()
+                    qry_temp_mwenyekiti.step += 1
+                    qry_temp_mwenyekiti.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kata uliloingiza halipo. Hakikisha jina la kata na urudie tena."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwenyekiti.step==3:
+                # Check Mtaa/Kijiji
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                if qry_mtaa_kijiji:
+                    qry_temp_mwenyekiti.mtaa_kijiji = content.title()
+                    qry_temp_mwenyekiti.step += 1
+                    qry_temp_mwenyekiti.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la mtaa/kijiji uliloingiza halipo. Hakikisha jina la mtaa/kijiji na urudie tena."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwenyekiti.step==4:
+
+                # Check ID Name
+                if content.upper() in ["NIDA", "KURA", "LESENI"]:
+                    qry_temp_mwenyekiti.id_card = content.title()
+                    qry_temp_mwenyekiti.step += 1
+                    qry_temp_mwenyekiti.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kitambulisho uliloingiza sio sahihi. Vitambulisho vinavyokubalika ni NIDA, Kura na Leseni tu."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwenyekiti.step==5:
+
+                # Check ID
+                if len(content)<=20 and content.isdigit():
+                    qry_temp_mwenyekiti.id_number = int(content)
+                    qry_temp_mwenyekiti.step += 1
+                    qry_temp_mwenyekiti.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya kitambulisho uliyoingiza sio sahihi. Hakikisha unaingiza tarakimu pekee."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mwenyekiti.step==6:
+
+                # Check PIN Length & Data Type
+                if len(content)==4 and content.isdigit():
+                    qry_temp_mwenyekiti.pin = int(content)
+                    qry_temp_mwenyekiti.status = status_complete
+                    qry_temp_mwenyekiti.step += 1
+                    qry_temp_mwenyekiti.save()
+
+                    # Send Data to Veo Table
+                    qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
+                    qry_mwenyekiti = Mwenyekiti.objects.create(
+                                                        id=qry_temp_mwenyekiti.id,
+                                                        phone=qry_temp_mwenyekiti.phone,
+                                                        name=qry_temp_mwenyekiti.name,
+                                                        mtaa_kijiji=qry_temp_mwenyekiti.mtaa_kijiji,
+                                                        kata=qry_temp_mwenyekiti.kata,
+                                                        id_card=qry_temp_mwenyekiti.id_card,
+                                                        id_number=qry_temp_mwenyekiti.id_number,
+                                                        pin=qry_temp_mwenyekiti.pin,
+                                                        step=step,
+                                                        is_active=is_active,
+                                                        verification_status=status_unverified
+                                                    )
+
+                    # Delete Data from Temp User Table
+                    qry_temp_mwenyekiti.delete()
+
+                    # Send SMS to other person
+                    message("Delivered", "+255715908000")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Usajili wako wa awali umekamilika."+
+                                        "Nambari yako ya usajili ni "+qry_mwenyekiti.id+
+                                        ".\n\n"+
+                                        "Tafadhali wasiliana na afisa mtendaji wako wa kata kwa uhakiki."
+                                        }
+                        ]
+                    }), 'application/json')
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                        ]
+                    }), 'application/json')
+
+            else:
+                # To be replaced by pass
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Invalid Step! Contact System Administrator!"}
+                    ]
+                }), 'application/json')
+
+            qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mwenyekiti.step)
+            qry_keyword_message = qry_keyword_message.filter(project=project)
+            qry_keyword_message = qry_keyword_message.filter(service=service)
+            qry_keyword_message = qry_keyword_message.get(member=member_mwenyekiti)
+
+            return HttpResponse(json.dumps({
+                'messages': [
+                    {'content': qry_keyword_message.message}
+                ]
+            }), 'application/json')
+
+
         # VEO Check Query
         if qry_veo:
             qry_veo = Veo.objects.get(phone=from_number)
@@ -412,7 +611,7 @@ def webhook(request):
             if qry_veo.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na mtendaji wako wa kata kwa uhakiki."}
+                        {'content': "Umeshajisajili katika mfumo huu. Tafadhali wasiliana na afisa mtendaji wako wa kata kwa uhakiki."}
                     ]
                 }), 'application/json')
 
@@ -432,23 +631,43 @@ def webhook(request):
 
             # Save Responses
             if qry_temp_veo.step==1:
-                qry_temp_veo.name = content
+                qry_temp_veo.name = content.title()
                 qry_temp_veo.step += 1
                 qry_temp_veo.save()
+
             elif qry_temp_veo.step==2:
-                qry_temp_veo.mtaa_kijiji = content
-                qry_temp_veo.step += 1
-                qry_temp_veo.save()
+                # Check Ward
+                qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
+                if qry_ward:
+                    qry_temp_veo.kata = content.title()
+                    qry_temp_veo.step += 1
+                    qry_temp_veo.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la kata uliloingiza halipo. Hakikisha jina la kata na urudie tena."}
+                        ]
+                    }), 'application/json')
+
             elif qry_temp_veo.step==3:
-                qry_temp_veo.kata = content
-                qry_temp_veo.step += 1
-                qry_temp_veo.save()
+                # Check Mtaa/Kijiji
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                if qry_mtaa_kijiji:
+                    qry_temp_veo.mtaa_kijiji = content.title()
+                    qry_temp_veo.step += 1
+                    qry_temp_veo.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, jina la mtaa/kijiji uliloingiza halipo. Hakikisha jina la mtaa/kijiji na urudie tena."}
+                        ]
+                    }), 'application/json')
 
             elif qry_temp_veo.step==4:
 
                 # Check ID Name
                 if content.upper() in ["NIDA", "KURA", "LESENI"]:
-                    qry_temp_veo.id_card = content
+                    qry_temp_veo.id_card = content.title()
                     qry_temp_veo.step += 1
                     qry_temp_veo.save()
                 else:
@@ -508,7 +727,7 @@ def webhook(request):
                             {'content': "Usajili wako wa awali umekamilika."+
                                         "Nambari yako ya usajili ni "+qry_veo.id+
                                         ".\n\n"+
-                                        "Tafadhali wasiliana na mjumbe wako kwa uhakiki."
+                                        "Tafadhali wasiliana na afisa mtendaji wako wa kata kwa uhakiki."
                                         }
                         ]
                     }), 'application/json')
@@ -582,6 +801,28 @@ def webhook(request):
                 qry_keyword_message = qry_keyword_message.filter(project=project)
                 qry_keyword_message = qry_keyword_message.filter(service=service)
                 qry_keyword_message = qry_keyword_message.get(member=member_mjumbe)
+
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': qry_keyword_message.message}
+                    ]
+                }), 'application/json')
+
+            # Create Mwenyekiti Jihakiki Profile
+            elif keyword[0].upper()=="MWENYEKITI":
+                qry_temp_mwenyekiti = TempMwenyekiti.objects.create(
+                                                id=mktID,
+                                                phone=from_number,
+                                                step=step,
+                                                status=status_partial
+                                            )
+                qry_temp_mwenyekiti.save()
+
+                # Query the Respective Message
+                qry_keyword_message = KeywordMessage.objects.filter(step=qry_temp_mwenyekiti.step)
+                qry_keyword_message = qry_keyword_message.filter(project=project)
+                qry_keyword_message = qry_keyword_message.filter(service=service)
+                qry_keyword_message = qry_keyword_message.get(member=member_mwenyekiti)
 
                 return HttpResponse(json.dumps({
                     'messages': [

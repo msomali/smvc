@@ -111,6 +111,41 @@ class TempVeo(models.Model):
     status = models.CharField(max_length=20)
 
 
+# Model for storing Mwenyekiti Jihakiki complete profile
+class Mwenyekiti(models.Model):
+    """Model for storing Mwenyekiti Jihakiki complete profile"""
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200)
+    mtaa_kijiji = models.CharField(max_length=200)
+    kata = models.CharField(max_length=200)
+    id_card = models.CharField(max_length=20)
+    id_number = models.IntegerField(unique=True)
+    pin = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    is_active = models.CharField(max_length=20)
+    verification_status = models.CharField(max_length=20)
+    weo_id = models.CharField(max_length=13, null=True)
+    date_weo_verified = models.DateTimeField(auto_now_add=True, null=True)
+
+
+# Model for holding Mwenyekiti Jihakiki profile during registration
+class TempMwenyekiti(models.Model):
+    """Model for holding Mwenyekiti Jihakiki profile during registration"""
+    id = models.CharField(primary_key=True, max_length=13)
+    phone = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=200, null=True)
+    mtaa_kijiji = models.CharField(max_length=200, null=True)
+    kata = models.CharField(max_length=200, null=True)
+    id_card = models.CharField(max_length=20, null=True)
+    id_number = models.IntegerField(unique=True, null=True)
+    pin = models.IntegerField(null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
+    status = models.CharField(max_length=20)
+
+
 # Model for storing VEO Jihakiki complete profile
 class Veo(models.Model):
     """Model for storing VEO Jihakiki complete profile"""
