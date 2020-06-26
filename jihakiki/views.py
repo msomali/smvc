@@ -122,13 +122,13 @@ def webhook(request):
                 else:
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': "Samahani, jina la kata uliyoingiza halipo. Hakikisha jina la kata na urudie tena."}
+                            {'content': "Samahani, jina la kata uliloingiza halipo. Hakikisha jina la kata na urudie tena."}
                         ]
                     }), 'application/json')
 
             elif qry_temp_mwananchi.step==4:
                 # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.ward).distinct()
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), kata__exact=qry_temp_mwananchi.ward).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mwananchi.mtaa_kijiji = content.title()
                     qry_temp_mwananchi.step += 1
@@ -150,7 +150,7 @@ def webhook(request):
                 else:
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': "Samahani, jina la kitongoji uliyoingiza halipo. Hakikisha jina la kitongoji na urudie tena."}
+                            {'content': "Samahani, jina la kitongoji uliloingiza halipo. Hakikisha jina la kitongoji na urudie tena."}
                         ]
                     }), 'application/json')
 
