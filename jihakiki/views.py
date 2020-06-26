@@ -128,7 +128,7 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==4:
                 # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), kata__exact=qry_temp_mwananchi.ward).distinct()
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), kata__exact=qry_temp_mwananchi.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mwananchi.mtaa_kijiji = content.title()
                     qry_temp_mwananchi.step += 1
@@ -142,7 +142,7 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==5:
                 # Check Kitongoji
-                qry_kitongoji = PostCode.objects.filter(kitongoji__iexact=content.title()).distinct()
+                qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mwananchi.mtaa_kijiji, kata__exact=qry_temp_mwananchi.kata).distinct()
                 if qry_kitongoji:
                     qry_temp_mwananchi.kitongoji = content.title()
                     qry_temp_mwananchi.step += 1
