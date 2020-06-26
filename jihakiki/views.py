@@ -120,10 +120,9 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_ward = PostCode.objects.filter(ward__icontains=content)
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': qry_possible_ward}
+                            {'content': "Samahani, jina la kata uliyoingiza halipo. Hakikisha jina la kata na urudie tena."}
                         ]
                     }), 'application/json')
 
@@ -135,10 +134,9 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__icontains=content, ward__icontains=qry_temp_mwananchi.ward)
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': qry_possible_mtaa_kijiji}
+                            {'content': "Samahani, jina la mtaa/kijiji uliloingiza halipo. Hakikisha jina la mtaa/kijiji na urudie tena."}
                         ]
                     }), 'application/json')
 
@@ -150,10 +148,9 @@ def webhook(request):
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
                 else:
-                    qry_possible_kitongoji = PostCode.objects.filter(kitongoji__icontains=content)
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': qry_possible_kitongoji}
+                            {'content': "Samahani, jina la kitongoji uliyoingiza halipo. Hakikisha jina la kitongoji na urudie tena."}
                         ]
                     }), 'application/json')
 
