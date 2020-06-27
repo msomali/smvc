@@ -2,7 +2,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from .models import (TempMwananchi, TempMjumbe, TempMwenyekiti, TempVeo,
-                    Mwananchi, Mjumbe, Mwenyekiti, Veo, Barua, Pin,
+                    Mwananchi, Mjumbe, Mwenyekiti, Veo, Weo, Barua, Pin,
                     KeywordMessage, PostCode)
 from django.db.models import Q, F
 
@@ -217,18 +217,21 @@ def webhook(request):
                     # Delete Data from Temp User Table
                     qry_temp_mwananchi.delete()
 
-                    # Notify Mwenyekiti via SMS completion of Mwananchi registration
-                    # qry_mwenyekiti = Mwenyekiti.objects.filter(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, is_active__exact="Yes")
-                    # qry_mwenyekiti = qry_mwenyekiti.get(verification_status__exact="Verified")
+                    # Notify Mwenyekiti via SMS on completion of Mwananchi registration
+                    qry_mwenyekiti = Mwenyekiti.objects.filter(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, is_active__exact="Yes")
+                    qry_mwenyekiti = qry_mwenyekiti.get(verification_status__exact="Verified")
 
-                    message_to_mwenyekiti = "Habari, mwananchi huyu amekamilisha usajili." \
-                        "Namba ya Usajili: "+qry_mwananchi.id+"\n" \
-                            "Jina: "+qry_mwananchi.name+"\n" \
-                                "Kata: "+qry_mwananchi.kata+"\n" \
-                                    "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n" \
-                                        "Kitongoji: "+qry_mwananchi.kitongoji
+                    if qry_mwenyekiti:
+                        message_to_mwenyekiti = "Habari, mwananchi amejisajili.\n" \
+                            "Namba: "+qry_mwananchi.id+"\n" \
+                                "Jina: "+qry_mwananchi.name+"\n" \
+                                    "Kata: "+qry_mwananchi.kata+"\n" \
+                                        "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n" \
+                                            "Kitongoji: "+qry_mwananchi.kitongoji
 
-                    message(message_to_mwenyekiti, "+255715908000")
+                        message(message_to_mwenyekiti, qry_mwenyekiti.phone)
+                    else:
+                        pass
 
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -411,8 +414,22 @@ def webhook(request):
                     # Delete Data from Temp User Table
                     qry_temp_mjumbe.delete()
 
-                    # Send SMS to other person
-                    message("Delivered", "+255715908000")
+                    # Notify Veo via SMS on completion of Mjumbe registration
+                    qry_veo = Veo.objects.filter(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, is_active__exact="Yes")
+                    qry_veo = qry_veo.get(verification_status__exact="Verified")
+
+                    if qry_veo:
+                        message_to_veo = "Habari, mjumbe amejisajili.\n" \
+                            "Namba: "+qry_mjumbe.id+"\n" \
+                                "Jina: "+qry_mjumbe.name+"\n" \
+                                    "Kata: "+qry_mjumbe.kata+"\n" \
+                                        "Mtaa/Kijiji: "+qry_mjumbe.mtaa_kijiji+"\n" \
+                                            "Kitongoji: "+qry_mjumbe.kitongoji+"\n" \
+                                                "Simu: "+qry_mjumbe.phone
+
+                        message(message_to_veo, qry_veo.phone)
+                    else:
+                        pass
 
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -565,8 +582,21 @@ def webhook(request):
                     # Delete Data from Temp User Table
                     qry_temp_mwenyekiti.delete()
 
-                    # Send SMS to other person
-                    message("Delivered", "+255715908000")
+                    # Notify Weo via SMS on completion of Mwenyekiti registration
+                    qry_weo = Weo.objects.filter(kata__exact=qry_mwenyekiti.kata)
+                    qry_weo = qry_weo.get(is_active__exact="Yes")
+
+                    if qry_weo:
+                        message_to_weo = "Habari, mwenyekiti amejisajili.\n" \
+                            "Namba: "+qry_mwenyekiti.id+"\n" \
+                                "Jina: "+qry_mwenyekiti.name+"\n" \
+                                    "Kata: "+qry_mwenyekiti.kata+"\n" \
+                                        "Mtaa/Kijiji: "+qry_mwenyekiti.mtaa_kijiji+"\n" \
+                                                "Simu: "+qry_mwenyekiti.phone
+
+                        message(message_to_weo, qry_weo.phone)
+                    else:
+                        pass
 
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -719,8 +749,21 @@ def webhook(request):
                     # Delete Data from Temp User Table
                     qry_temp_veo.delete()
 
-                    # Send SMS to other person
-                    message("Delivered", "+255715908000")
+                    # Notify Weo via SMS on completion of Veo registration
+                    qry_weo = Weo.objects.filter(kata__exact=qry_veo.kata)
+                    qry_weo = qry_weo.get(is_active__exact="Yes")
+
+                    if qry_weo:
+                        message_to_weo = "Habari, mwenyekiti amejisajili.\n" \
+                            "Namba: "+qry_veo.id+"\n" \
+                                "Jina: "+qry_veo.name+"\n" \
+                                    "Kata: "+qry_veo.kata+"\n" \
+                                        "Mtaa/Kijiji: "+qry_veo.mtaa_kijiji+"\n" \
+                                                "Simu: "+qry_veo.phone
+
+                        message(message_to_weo, qry_weo.phone)
+                    else:
+                        pass
 
                     return HttpResponse(json.dumps({
                         'messages': [
