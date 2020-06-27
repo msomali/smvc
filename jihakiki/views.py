@@ -404,7 +404,7 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==4:
                 # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mjumbe.mtaa_kijiji = content.title()
                     qry_temp_mjumbe.step += 1
@@ -418,7 +418,7 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==5:
                 # Check Kitongoji
-                qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mwananchi.mtaa_kijiji, ward__exact=qry_temp_mwananchi.kata).distinct()
+                qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mjumbe.mtaa_kijiji, ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_kitongoji:
                     qry_temp_mjumbe.kitongoji = content.title()
                     qry_temp_mjumbe.step += 1
@@ -589,7 +589,7 @@ def webhook(request):
 
             elif qry_temp_mwenyekiti.step==3:
                 # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwenyekiti.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mwenyekiti.mtaa_kijiji = content.title()
                     qry_temp_mwenyekiti.step += 1
@@ -757,7 +757,7 @@ def webhook(request):
 
             elif qry_temp_veo.step==3:
                 # Check Mtaa/Kijiji
-                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
+                qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_veo.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_veo.mtaa_kijiji = content.title()
                     qry_temp_veo.step += 1
