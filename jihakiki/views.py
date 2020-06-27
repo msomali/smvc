@@ -9,5 +9,5 @@
 # import json
 # import random
 
-import rest_api
-import webhook_api
+from jihakiki import rest_api
+from jihakiki import webhook_api
