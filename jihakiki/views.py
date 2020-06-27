@@ -65,27 +65,29 @@ def webhook(request):
         member_mtendaji = "Mtendaji"
         message_type = "Convo"
 
-        # Queries
-        # Mwananchi Queries
+        # Check Queries
+        # Mwananchi Check Queries
         qry_mwananchi = Mwananchi.objects.filter(phone__exact=from_number)
         qry_temp_mwananchi = TempMwananchi.objects.filter(phone__exact=from_number)
 
-        # Mjumbe Queries
+        # Mjumbe Check Queries
         qry_mjumbe = Mjumbe.objects.filter(phone__exact=from_number)
         qry_temp_mjumbe = TempMjumbe.objects.filter(phone__exact=from_number)
 
-        # Mwenyekiti Queries
+        # Mwenyekiti Check Queries
         qry_mwenyekiti = Mwenyekiti.objects.filter(phone__exact=from_number)
         qry_temp_mwenyekiti = TempMwenyekiti.objects.filter(phone__exact=from_number)
 
-        # VEO Queries
+        # VEO Check Queries
         qry_veo = Veo.objects.filter(phone__exact=from_number)
         qry_temp_veo = TempVeo.objects.filter(phone__exact=from_number)
 
+        # WEO Check Queries
+        qry_weo = Weo.objects.filter(phone__exact=from_number)
 
-        # Mwananchi Check Query
+        # Mwananchi Registered Query
         if qry_mwananchi:
-            qry_mwananchi = Mwananchi.objects.get(phone=from_number)
+            qry_mwananchi = qry_mwananchi.get(phone=from_number)
 
             if qry_mwananchi.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
@@ -94,17 +96,88 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes":
+                if int(content.strip())==1:
+                    # Return wasifu
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Wasifu wako:\n"+
+                                        "Namba: "+qry_mwananchi.id+"\n"+
+                                        "Jina: "+qry_mwananchi.name+"\n"+
+                                        "Simu: "+qry_mwananchi.phone+"\n"+
+                                        "Kazi: "+qry_mwananchi.occupation+"\n"+
+                                        "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
+                                        "Kata: "+qry_mwananchi.kata+"\n"+
+                                        "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
+                                        "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
+                                        "Jihakiki: "+qry_mwananchi.verification_status
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==2:
+                    # Return mawasiliano ya uongozi wa mtaa/kijiji
+                    qry_mjumbe = qry_mjumbe.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
+
+                    qry_mwenyekiti = qry_mwenyekiti.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+
+                    qry_veo = qry_veo.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Mjumbe:\n"+
+                                        "Jina: "+qry_mjumbe.name+"\n"+
+                                        "Simu: "+qry_mjumbe.phone+"\n"+
+                                        "Mwenyekiti:\n"+
+                                        "Jina: "+qry_mwenyekiti.name+"\n"+
+                                        "Simu: "+qry_mwenyekiti.phone+"\n"+
+                                        "Mtendaji:\n"+
+                                        "Jina: "+qry_veo.name+"\n"+
+                                        "Simu: "+qry_veo.phone
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==3:
+                    # Return mawasiliano ya uongozi wa kata
+                    qry_weo = qry_weo.get(kata__exact=qry_mwananchi.kata, is_active__exact="Yes")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Mtendaji:\n"+
+                                        "Jina: "+qry_weo.name+"\n"+
+                                        "Simu: "+qry_weo.phone
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif content.strip().isdigit()==False:
+                    # If selection was not a digit inform a user
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, chaguo lako sio sahihi. Hakikisha umeingiza tarakimu husika."}
+                        ]
+                    }), 'application/json')
+
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Karibu JIHAKIKI: "+qry_mwananchi.name+"\n"+
+                                        "1. Wasifu wako.\n"+
+                                        "2. Mawasiliano ya uongozi wa mtaa/kijiji/kitongoji chako.\n"+
+                                        "3. Mawasiliano ya uongozi wa kata yako."
+                            }
+                        ]
+                    }), 'application/json')
+
             else:
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Karibu JIHAKIKI: "+qry_mwananchi.name+"\n"+
-                                    "1. Wasifu wako.\n"+
-                                    "2. Mawasiliano ya uongozi wa mtaa/kijiji/kitongoji chako.\n"+
-                                    "3. Mawasiliano ya uongozi wa kata yako."
-                        }
+                        {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kuamsha akaunti yako."}
                     ]
                 }), 'application/json')
 
+        # Mwananchi Registration Queries
         elif qry_temp_mwananchi:
             qry_temp_mwananchi = TempMwananchi.objects.get(phone=from_number)
 
@@ -214,7 +287,7 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from Temp User Table
+                    # Delete Data from TempMwananchi Table
                     qry_temp_mwananchi.delete()
 
                     # Notify Mwenyekiti via SMS on completion of Mwananchi registration
@@ -269,8 +342,8 @@ def webhook(request):
             }), 'application/json')
 
 
-        # Mjumbe Check Query
-        if qry_mjumbe:
+        # Mjumbe Registered Query
+        elif qry_mjumbe:
             qry_mjumbe = Mjumbe.objects.get(phone=from_number)
 
             if qry_mjumbe.verification_status=="Unverified":
@@ -291,6 +364,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+        # Mjumbe Registration Queries
         elif qry_temp_mjumbe:
             qry_temp_mjumbe = TempMjumbe.objects.get(phone=from_number)
 
@@ -411,10 +485,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from Temp User Table
+                    # Delete Data from TempMjumbe Table
                     qry_temp_mjumbe.delete()
 
-                    # Notify Veo via SMS on completion of Mjumbe registration
+                    # Notify VEO via SMS on completion of Mjumbe registration
                     qry_veo = Veo.objects.filter(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, is_active__exact="Yes")
                     qry_veo = qry_veo.get(verification_status__exact="Verified")
 
@@ -467,8 +541,8 @@ def webhook(request):
             }), 'application/json')
 
 
-        # Mwenyekiti Check Query
-        if qry_mwenyekiti:
+        # Mwenyekiti Registered Query
+        elif qry_mwenyekiti:
             qry_mwenyekiti = Mwenyekiti.objects.get(phone=from_number)
 
             if qry_mwenyekiti.verification_status=="Unverified":
@@ -489,6 +563,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+        # Mwenyekiti Registration Queries
         elif qry_temp_mwenyekiti:
             qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
 
@@ -563,7 +638,7 @@ def webhook(request):
                     qry_temp_mwenyekiti.step += 1
                     qry_temp_mwenyekiti.save()
 
-                    # Send Data to Veo Table
+                    # Send Data to Mwenyekiti Table
                     qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
                     qry_mwenyekiti = Mwenyekiti.objects.create(
                                                         id=qry_temp_mwenyekiti.id,
@@ -579,10 +654,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from Temp User Table
+                    # Delete Data from TempMwenyekiti Table
                     qry_temp_mwenyekiti.delete()
 
-                    # Notify Weo via SMS on completion of Mwenyekiti registration
+                    # Notify WEO via SMS on completion of Mwenyekiti registration
                     qry_weo = Weo.objects.filter(kata__exact=qry_mwenyekiti.kata)
                     qry_weo = qry_weo.get(is_active__exact="Yes")
 
@@ -634,8 +709,8 @@ def webhook(request):
             }), 'application/json')
 
 
-        # VEO Check Query
-        if qry_veo:
+        # VEO Registered Query
+        elif qry_veo:
             qry_veo = Veo.objects.get(phone=from_number)
 
             if qry_veo.verification_status=="Unverified":
@@ -656,6 +731,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+        # VEO Registration Queries
         elif qry_temp_veo:
             qry_temp_veo = TempVeo.objects.get(phone=from_number)
 
@@ -730,7 +806,7 @@ def webhook(request):
                     qry_temp_veo.step += 1
                     qry_temp_veo.save()
 
-                    # Send Data to Veo Table
+                    # Send Data to VEO Table
                     qry_temp_veo = TempVeo.objects.get(phone=from_number)
                     qry_veo = Veo.objects.create(
                                                         id=qry_temp_veo.id,
@@ -746,10 +822,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from Temp User Table
+                    # Delete Data from TempVeo Table
                     qry_temp_veo.delete()
 
-                    # Notify Weo via SMS on completion of Veo registration
+                    # Notify WEO via SMS on completion of VEO registration
                     qry_weo = Weo.objects.filter(kata__exact=qry_veo.kata)
                     qry_weo = qry_weo.get(is_active__exact="Yes")
 
@@ -799,6 +875,10 @@ def webhook(request):
                     {'content': qry_keyword_message.message}
                 ]
             }), 'application/json')
+
+
+        # Verification Queries
+        # Mwananchi Verification
 
 
         # New account creation for Mwananchi, Mjumbe & VEO
