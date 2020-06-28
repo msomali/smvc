@@ -59,10 +59,8 @@ def pinVer(storage):
 
 
 # PIN Generator for Verification Method
+import string
 def pinGen(size=6, chars=string.digits):
-
-    import string
-
     return ''.join(random.choice(chars) for x in range(size))
 
 
