@@ -99,7 +99,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and keyword[0]=="Jihakiki":
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and keyword[0].upper()=="JIHAKIKI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -355,7 +355,7 @@ def webhook(request):
                 }), 'application/json')
 
             # Services available under Mjumbe Keyword
-            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0]=="Mjumbe":
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="MJUMBE":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -420,9 +420,10 @@ def webhook(request):
                     pass
 
             # Verification Service
-            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0]=="Hakiki":
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
                 # Check PIN
-                if int(keyword[2])==qry_mjumbe.pin:
+                keyword_pin = int(keyword[2])
+                if keyword_pin==qry_mjumbe.pin:
                     qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
                     # Check Mwananchi Active and Verification status
                     if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
