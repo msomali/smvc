@@ -419,7 +419,7 @@ def webhook(request):
                 else:
                     pass
 
-            # Verification Service
+            # Review Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
                 # Check PIN
                 keyword_pin = int(keyword[2])
