@@ -422,7 +422,7 @@ def webhook(request):
             # Verification Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0]=="Hakiki":
                 # Check PIN
-                if keyword[2]==qry_mjumbe.pin:
+                if int(keyword[2])==qry_mjumbe.pin:
                     qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
                     # Check Mwananchi Active and Verification status
                     if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
