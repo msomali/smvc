@@ -423,7 +423,7 @@ def webhook(request):
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
                 # Check PIN
                 if int(keyword[2])==qry_mjumbe.pin:
-                    qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1])
                     # Check for mwananchi
                     if qry_mwananchi:
                         return HttpResponse(json.dumps({
