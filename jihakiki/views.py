@@ -480,7 +480,7 @@ def webhook(request):
                                 status=status_valid
                             )
 
-                            pin_generated = str(pin_generated)
+                            # pin_generated = str(pin_generated)
                             return HttpResponse(json.dumps({
                                 'messages': [
                                     {'content': "Hakiki taarifa zifuatazo:\n"+
