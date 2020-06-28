@@ -203,7 +203,7 @@ class Pin(models.Model):
     date_generated = models.DateTimeField(auto_now_add=True)
     project = models.CharField(max_length=20)
     service = models.CharField(max_length=20)
-    date_used = models.DateTimeField(auto_now=True)
+    date_used = models.DateTimeField(auto_now=True, null=True)
     status = models.CharField(max_length=20)
 
 

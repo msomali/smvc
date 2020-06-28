@@ -86,6 +86,7 @@ def webhook(request):
         status_unverified = "Unverified"
         status_partial = "Partial"
         status_complete = "Complete"
+        status_valid = "Valid"
         is_active = "Yes"
         mncID = "MNC-"+postcode+"-"+str(randno)
         mjbID = "MJB-"+postcode+"-"+str(randno)
@@ -468,6 +469,17 @@ def webhook(request):
                             qry_mwananchi.mjumbe_id = qry_mjumbe.id
                             qry_mwananchi.save()
 
+                            # Save Generated PIN
+                            pin_generated = pinGen()
+                            qry_pin_generated = Pin.objects.create(
+                                pin=pin_generated,
+                                generator_id=qry_mjumbe.id,
+                                client_id=qry_mwananchi.id,
+                                project=project,
+                                service=service,
+                                status=status_valid
+                            )
+
                             return HttpResponse(json.dumps({
                                 'messages': [
                                     {'content': "Hakiki taarifa zifuatazo:\n"+
@@ -480,7 +492,7 @@ def webhook(request):
                                                 "Kata: "+qry_mwananchi.kata+"\n"+
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
-                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pinGen()+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+str(pin_generated)+"\n"+
                                                 "Mfano: THIBITISHA MNC-999-54865 7485."
                                     }
                                 ]
