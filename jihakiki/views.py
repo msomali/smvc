@@ -423,25 +423,26 @@ def webhook(request):
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
                 # Check PIN
                 if int(keyword[2])==qry_mjumbe.pin:
-                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1])
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
                     # Check for mwananchi
                     if qry_mwananchi:
-                        return HttpResponse(json.dumps({
-                            'messages': [
-                                {'content': "Yupo"}
-                            ]
-                        }), 'application/json')
-                #         # Check Mwananchi Active and Verification status
-                #         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
-                #             qry_mwananchi.step += 1
-                #             qry_mwananchi.mjumbe_id = qry_mjumbe.id
-                #             qry_mwananchi.save()
-                #         else:
-                #             return HttpResponse(json.dumps({
-                #                 'messages': [
-                #                     {'content': "Samahani, namba ya usajili ya mwananchi imesitishwa au imeshahakikiwa."}
-                #                 ]
-                #             }), 'application/json')
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
+                        # Check Mwananchi Active and Verification status
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Bien"}
+                                ]
+                            }), 'application/json')
+                            # qry_mwananchi.step += 1
+                            # qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                            # qry_mwananchi.save()
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili ya mwananchi imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
                     else:
                         return HttpResponse(json.dumps({
                             'messages': [
