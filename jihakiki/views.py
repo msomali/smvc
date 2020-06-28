@@ -97,7 +97,18 @@ def webhook(request):
                 }), 'application/json')
 
             elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes":
-                if int(content.strip())==1:
+                if content.strip().isdigit()==False:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Karibu JIHAKIKI: "+qry_mwananchi.name+"\n"+
+                                        "1. Wasifu wako.\n"+
+                                        "2. Mawasiliano ya uongozi wa mtaa/kijiji/kitongoji chako.\n"+
+                                        "3. Mawasiliano ya uongozi wa kata yako."
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==1:
                     # Return wasifu
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -151,24 +162,8 @@ def webhook(request):
                         ]
                     }), 'application/json')
 
-                elif content.strip().isdigit()==False:
-                    # If selection was not a digit inform a user
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': "Samahani, chaguo lako sio sahihi. Hakikisha umeingiza tarakimu husika."}
-                        ]
-                    }), 'application/json')
-
                 else:
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': "Karibu JIHAKIKI: "+qry_mwananchi.name+"\n"+
-                                        "1. Wasifu wako.\n"+
-                                        "2. Mawasiliano ya uongozi wa mtaa/kijiji/kitongoji chako.\n"+
-                                        "3. Mawasiliano ya uongozi wa kata yako."
-                            }
-                        ]
-                    }), 'application/json')
+                    pass
 
             else:
                 return HttpResponse(json.dumps({
