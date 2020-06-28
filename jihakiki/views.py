@@ -9,8 +9,9 @@ from django.db.models import Q, F
 import json
 import random
 
+
 # Telerivet REST API
-# The code below sends an SMS message via Telerivet:
+# The method below sends an SMS message via Telerivet:
 def message(msg, recepient):
 
     from jihakiki import telerivet
@@ -27,6 +28,42 @@ def message(msg, recepient):
     )
 
     return HttpResponse('executed')
+
+
+# PIN Hashing
+def pinHash(pin):
+
+    import hashlib
+    import os
+
+    salt = os.urandom(32)
+
+    key = hashlib.pbkdf2_hmac(
+        'sha256',
+        pin.encode('utf-8'),
+        salt,
+        100000,
+        #dklen=128
+    )
+
+    # Store them as:
+    storage = salt + key
+
+    return storage
+
+
+# PIN Verification
+def pinVer(storage):
+    salt_from_storage = storage[:32]
+    key_from_storage = storage[32:]
+
+
+# PIN Generator for Verification Method
+def pinGen(size=6, chars=string.digits):
+
+    import string
+
+    return ''.join(random.choice(chars) for x in range(size))
 
 
 # Telerivet Webhook API
@@ -429,14 +466,27 @@ def webhook(request):
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
                         # Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
+                            qry_mwananchi.step += 1
+                            qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                            qry_mwananchi.save()
+
                             return HttpResponse(json.dumps({
                                 'messages': [
-                                    {'content': "Bien"}
+                                    {'content': "Hakiki taarifa zifuatazo:\n"+
+                                                "Namba: "+qry_mwananchi.id+"\n"+
+                                                "Jina: "+qry_mwananchi.name+"\n"+
+                                                "Simu: "+qry_mwananchi.phone+"\n"+
+                                                "Kazi: "+qry_mwananchi.occupation+"\n"+
+                                                "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
+                                                "Kitamb. Namba: "+qry_mwananchi.id_number+"\n"+
+                                                "Kata: "+qry_mwananchi.kata+"\n"+
+                                                "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
+                                                "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pinGen()+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                    }
                                 ]
                             }), 'application/json')
-                            # qry_mwananchi.step += 1
-                            # qry_mwananchi.mjumbe_id = qry_mjumbe.id
-                            # qry_mwananchi.save()
                         else:
                             return HttpResponse(json.dumps({
                                 'messages': [
