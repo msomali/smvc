@@ -422,16 +422,15 @@ def webhook(request):
             # Review Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
                 # Check PIN
-                # keyword_pin = int(keyword[2])
                 if int(keyword[2])==qry_mjumbe.pin:
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': "PIN: "+keyword[2]}
-                        ]
-                    }), 'application/json')
-                #     qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
-                #     # Check for mwananchi
-                #     if qry_mwananchi:
+                    qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
+                    # Check for mwananchi
+                    if qry_mwananchi:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Yupo"}
+                            ]
+                        }), 'application/json')
                 #         # Check Mwananchi Active and Verification status
                 #         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
                 #             qry_mwananchi.step += 1
@@ -443,12 +442,12 @@ def webhook(request):
                 #                     {'content': "Samahani, namba ya usajili ya mwananchi imesitishwa au imeshahakikiwa."}
                 #                 ]
                 #             }), 'application/json')
-                #     else:
-                #         return HttpResponse(json.dumps({
-                #             'messages': [
-                #                 {'content': "Samahani, namba ya usajili ya mwananchi haipo."}
-                #             ]
-                #         }), 'application/json')
+                    else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya usajili ya mwananchi haipo."}
+                            ]
+                        }), 'application/json')
                 else:
                         return HttpResponse(json.dumps({
                             'messages': [
