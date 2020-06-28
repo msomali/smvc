@@ -51,10 +51,10 @@ class Mwananchi(models.Model):
     is_active = models.CharField(max_length=20)
     verification_status = models.CharField(max_length=20)
     mjumbe_id = models.CharField(max_length=13, null=True)
-    date_mjumbe_verified = models.DateTimeField(auto_now_add=True, null=True)
+    date_mjumbe_verified = models.DateTimeField(auto_now=True, null=True)
     barua_id = models.IntegerField(null=True)
     veo_id = models.CharField(max_length=13, null=True)
-    date_veo_verified = models.DateTimeField(auto_now_add=True, null=True)
+    date_veo_verified = models.DateTimeField(auto_now=True, null=True)
 
 
 # Model for holding Mjumbe Jihakiki profile during registration
@@ -92,7 +92,7 @@ class Mjumbe(models.Model):
     is_active = models.CharField(max_length=20)
     verification_status = models.CharField(max_length=20)
     veo_id = models.CharField(max_length=13, null=True)
-    date_veo_verified = models.DateTimeField(auto_now_add=True, null=True)
+    date_veo_verified = models.DateTimeField(auto_now=True, null=True)
 
 
 # Model for holding VEO Jihakiki profile during registration
@@ -127,7 +127,7 @@ class Mwenyekiti(models.Model):
     is_active = models.CharField(max_length=20)
     verification_status = models.CharField(max_length=20)
     weo_id = models.CharField(max_length=13, null=True)
-    date_weo_verified = models.DateTimeField(auto_now_add=True, null=True)
+    date_weo_verified = models.DateTimeField(auto_now=True, null=True)
 
 
 # Model for holding Mwenyekiti Jihakiki profile during registration
@@ -162,7 +162,7 @@ class Veo(models.Model):
     is_active = models.CharField(max_length=20)
     verification_status = models.CharField(max_length=20)
     weo_id = models.CharField(max_length=13, null=True)
-    date_weo_verified = models.DateTimeField(auto_now_add=True, null=True)
+    date_weo_verified = models.DateTimeField(auto_now=True, null=True)
 
 
 # Model for storing WEO Jihakiki complete data
@@ -203,7 +203,7 @@ class Pin(models.Model):
     date_generated = models.DateTimeField(auto_now_add=True)
     project = models.CharField(max_length=20)
     service = models.CharField(max_length=20)
-    date_used = models.DateTimeField(auto_now_add=True)
+    date_used = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20)
 
 

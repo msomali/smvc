@@ -89,6 +89,9 @@ def webhook(request):
         if qry_mwananchi:
             qry_mwananchi = qry_mwananchi.get(phone=from_number)
 
+            # Capture Functional Keyword
+            keyword = content.split(' ', maxsplit=2)
+
             if qry_mwananchi.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
                     'messages': [
@@ -96,7 +99,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes":
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and keyword[0]=="Jihakiki":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -127,7 +130,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==2:
-                    # Return mawasiliano ya uongozi wa mtaa/kijiji
+                    # Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
                     qry_mjumbe = Mjumbe.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
 
                     qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
@@ -168,7 +171,7 @@ def webhook(request):
             else:
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kuamsha akaunti yako."}
+                        {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kurudisha akaunti yako."}
                     ]
                 }), 'application/json')
 
@@ -339,7 +342,10 @@ def webhook(request):
 
         # Mjumbe Registered Query
         elif qry_mjumbe:
-            qry_mjumbe = Mjumbe.objects.get(phone=from_number)
+            qry_mjumbe = qry_mjumbe.get(phone=from_number)
+
+            # Capture Functional Keyword
+            keyword = content.split(' ', maxsplit=2)
 
             if qry_mjumbe.verification_status=="Unverified":
                 return HttpResponse(json.dumps({
@@ -348,14 +354,98 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
+            # Services available under Mjumbe Keyword
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0]=="Mjumbe":
+                if content.strip().isdigit()==False:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Karibu JIHAKIKI: "+qry_mjumbe.name+"\n"+
+                                        "1. Wasifu wako.\n"+
+                                        "2. Mawasiliano ya uongozi wa mtaa/kijiji chako.\n"+
+                                        "3. Mawasiliano ya uongozi wa kata yako."
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==1:
+                    # Return wasifu
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Wasifu wako:\n"+
+                                        "Namba: "+qry_mjumbe.id+"\n"+
+                                        "Jina: "+qry_mjumbe.name+"\n"+
+                                        "Simu: "+qry_mjumbe.phone+"\n"+
+                                        "Kitambulisho: "+qry_mjumbe.id_card+"\n"+
+                                        "Kata: "+qry_mjumbe.kata+"\n"+
+                                        "Mtaa/Kijiji: "+qry_mjumbe.mtaa_kijiji+"\n"+
+                                        "Kitongoji: "+qry_mjumbe.kitongoji+"\n"+
+                                        "Shina: "+qry_mjumbe.shina+"\n"+
+                                        "Jihakiki: "+qry_mjumbe.verification_status
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==2:
+                    # Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
+                    qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+
+                    qry_veo = Veo.objects.get(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Mwenyekiti:\n"+
+                                        "Jina: "+qry_mwenyekiti.name+"\n"+
+                                        "Simu: "+qry_mwenyekiti.phone+"\n\n"+
+                                        "Mtendaji:\n"+
+                                        "Jina: "+qry_veo.name+"\n"+
+                                        "Simu: "+qry_veo.phone
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==3:
+                    # Return mawasiliano ya uongozi wa kata
+                    qry_weo = Weo.objects.get(kata__exact=qry_mjumbe.kata, is_active__exact="Yes")
+
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Mtendaji:\n"+
+                                        "Jina: "+qry_weo.name+"\n"+
+                                        "Simu: "+qry_weo.phone
+                            }
+                        ]
+                    }), 'application/json')
+
+                else:
+                    pass
+
+            # Verification Service
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0]=="Hakiki":
+                # Check PIN
+                if keyword[2]==qry_mjumbe.pin:
+                    qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
+                    # Check Mwananchi Active and Verification status
+                    if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
+                        qry_mwananchi.step += 1
+                        qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                        qry_mwananchi.save()
+                    else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya usajili ya mwananchi haipo au imeshahakikiwa."}
+                            ]
+                        }), 'application/json')
+                else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                            ]
+                        }), 'application/json')
+
             else:
                 return HttpResponse(json.dumps({
                     'messages': [
-                        {'content': "Karibu JIHAKIKI: "+qry_mjumbe.name+"\n"+
-                                    "1. Wasifu wako.\n"+
-                                    "2. Mawasiliano ya uongozi wa mtaa/kijiji chako.\n"+
-                                    "3. Mawasiliano ya uongozi wa kata yako."
-                        }
+                        {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kurudisha akaunti yako."}
                     ]
                 }), 'application/json')
 
