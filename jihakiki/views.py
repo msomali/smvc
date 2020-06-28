@@ -425,15 +425,23 @@ def webhook(request):
                 keyword_pin = int(keyword[2])
                 if keyword_pin==qry_mjumbe.pin:
                     qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
-                    # Check Mwananchi Active and Verification status
-                    if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
-                        qry_mwananchi.step += 1
-                        qry_mwananchi.mjumbe_id = qry_mjumbe.id
-                        qry_mwananchi.save()
+                    # Check for mwananchi
+                    if qry_mwananchi:
+                        # Check Mwananchi Active and Verification status
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
+                            qry_mwananchi.step += 1
+                            qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                            qry_mwananchi.save()
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili ya mwananchi imesitishwa au imeshahakikiwa."}
+                                ]
+                            }), 'application/json')
                     else:
                         return HttpResponse(json.dumps({
                             'messages': [
-                                {'content': "Samahani, namba ya usajili ya mwananchi haipo au imeshahakikiwa."}
+                                {'content': "Samahani, namba ya usajili ya mwananchi haipo."}
                             ]
                         }), 'application/json')
                 else:
