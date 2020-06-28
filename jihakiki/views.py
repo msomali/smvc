@@ -375,20 +375,6 @@ def webhook(request):
                 qry_temp_mjumbe.save()
 
             elif qry_temp_mjumbe.step==2:
-
-                # Check Shina Length & Data Type
-                if len(content)<=3 and content.isdigit():
-                    qry_temp_mjumbe.shina = content
-                    qry_temp_mjumbe.step += 1
-                    qry_temp_mjumbe.save()
-                else:
-                    return HttpResponse(json.dumps({
-                        'messages': [
-                            {'content': "Samahani, namba ya shina uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu zisizozidi 3 tu."}
-                        ]
-                    }), 'application/json')
-
-            elif qry_temp_mjumbe.step==3:
                 # Check Ward
                 qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
                 if qry_ward:
@@ -402,7 +388,7 @@ def webhook(request):
                         ]
                     }), 'application/json')
 
-            elif qry_temp_mjumbe.step==4:
+            elif qry_temp_mjumbe.step==3:
                 # Check Mtaa/Kijiji
                 qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_mtaa_kijiji:
@@ -416,7 +402,7 @@ def webhook(request):
                         ]
                     }), 'application/json')
 
-            elif qry_temp_mjumbe.step==5:
+            elif qry_temp_mjumbe.step==4:
                 # Check Kitongoji
                 qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mjumbe.mtaa_kijiji, ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_kitongoji:
@@ -427,6 +413,20 @@ def webhook(request):
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Samahani, jina la kitongoji uliloingiza halipo. Hakikisha jina la kitongoji na urudie tena."}
+                        ]
+                    }), 'application/json')
+
+            elif qry_temp_mjumbe.step==5:
+
+                # Check Shina Length & Data Type
+                if len(content)<=3 and content.isdigit():
+                    qry_temp_mjumbe.shina = content
+                    qry_temp_mjumbe.step += 1
+                    qry_temp_mjumbe.save()
+                else:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Samahani, namba ya shina uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu zisizozidi 3 tu."}
                         ]
                     }), 'application/json')
 
@@ -830,7 +830,7 @@ def webhook(request):
                     qry_weo = qry_weo.get(is_active__exact="Yes")
 
                     if qry_weo:
-                        message_to_weo = "Habari, mwenyekiti amejisajili.\n" \
+                        message_to_weo = "Habari, mtendaji amejisajili.\n" \
                             "Namba: "+qry_veo.id+"\n" \
                                 "Jina: "+qry_veo.name+"\n" \
                                     "Kata: "+qry_veo.kata+"\n" \
