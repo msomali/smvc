@@ -128,11 +128,11 @@ def webhook(request):
 
                 elif int(content.strip())==2:
                     # Return mawasiliano ya uongozi wa mtaa/kijiji
-                    qry_mjumbe = qry_mjumbe.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
+                    qry_mjumbe = Mjumbe.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
 
-                    qry_mwenyekiti = qry_mwenyekiti.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+                    qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
 
-                    qry_veo = qry_veo.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
+                    qry_veo = Veo.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -151,7 +151,7 @@ def webhook(request):
 
                 elif int(content.strip())==3:
                     # Return mawasiliano ya uongozi wa kata
-                    qry_weo = qry_weo.get(kata__exact=qry_mwananchi.kata, is_active__exact="Yes")
+                    qry_weo = Weo.objects.get(kata__exact=qry_mwananchi.kata, is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
                         'messages': [
