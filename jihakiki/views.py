@@ -138,10 +138,10 @@ def webhook(request):
                         'messages': [
                             {'content': "Mjumbe:\n"+
                                         "Jina: "+qry_mjumbe.name+"\n"+
-                                        "Simu: "+qry_mjumbe.phone+"\n"+
+                                        "Simu: "+qry_mjumbe.phone+"\n\n"+
                                         "Mwenyekiti:\n"+
                                         "Jina: "+qry_mwenyekiti.name+"\n"+
-                                        "Simu: "+qry_mwenyekiti.phone+"\n"+
+                                        "Simu: "+qry_mwenyekiti.phone+"\n\n"+
                                         "Mtendaji:\n"+
                                         "Jina: "+qry_veo.name+"\n"+
                                         "Simu: "+qry_veo.phone
