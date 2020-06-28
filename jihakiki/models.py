@@ -197,7 +197,7 @@ class Barua(models.Model):
 # Model for storing Msimbo (Auto Generated PIN) used in various verification processes
 class Pin(models.Model):
     """Model for storing Msimbo (Auto Generated PIN) used in various verification processes"""
-    pin = models.CharField(max_length=6)
+    pin = models.IntegerField()
     generator_id = models.CharField(max_length=13)
     client_id = models.CharField(max_length=13)
     date_generated = models.DateTimeField(auto_now_add=True)
