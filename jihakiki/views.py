@@ -426,7 +426,7 @@ def webhook(request):
                 if int(keyword[2])==qry_mjumbe.pin:
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': "PIN: "+int(keyword[2])}
+                            {'content': "PIN: "+keyword[2]}
                         ]
                     }), 'application/json')
                 #     qry_mwananchi = Mwananchi.objects.get(id__exact=keyword[1])
