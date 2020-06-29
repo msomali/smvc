@@ -493,7 +493,10 @@ def webhook(request):
                                                 "Namba: "+qry_mwananchi.id+"\n"+
                                                 "Jina: "+qry_mwananchi.name+"\n"+
                                                 "Simu: "+qry_mwananchi.phone+"\n"+
-                                                "Kazi: "+pin_generated+"\n"+
+                                                "Kazi: "+qry_mwananchi.occupation+"\n"+
+                                                "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
+                                                "Kitamb. Namba: "+qry_mwananchi.id_number+"\n"+
+                                                "Kata: "+pin_generated+"\n"+
                                                 "Mfano: THIBITISHA MNC-999-54865 7485."
                                     }
                                 ]
