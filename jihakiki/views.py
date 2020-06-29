@@ -499,7 +499,7 @@ def webhook(request):
                                                 "Kata: "+qry_mwananchi.kata+"\n"+
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
-                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                                                "Msimbo: "+pin_generated+"\n"+
                                                 "Mfano: THIBITISHA MNC-999-54865 7485."
                                     }
                                 ]
