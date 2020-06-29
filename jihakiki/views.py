@@ -499,8 +499,7 @@ def webhook(request):
                                                 "Kata: "+qry_mwananchi.kata+"\n"+
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
-                                                "Msimbo: "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Msimbo: "+pin_generated
                                     }
                                 ]
                             }), 'application/json')
