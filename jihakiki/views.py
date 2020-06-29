@@ -204,10 +204,16 @@ def webhook(request):
                 else:
                     pass
 
-            else:
+            elif qry_mwananchi.is_active=="No":
                 return HttpResponse(json.dumps({
                     'messages': [
                         {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kurudisha akaunti yako."}
+                    ]
+                }), 'application/json')
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Samahani, huwezi kufanya muamala huu."}
                     ]
                 }), 'application/json')
 
@@ -465,39 +471,45 @@ def webhook(request):
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
                         # Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
-                            qry_mwananchi.step += 1
-                            qry_mwananchi.mjumbe_id = qry_mjumbe.id
-                            qry_mwananchi.save()
-
-                            # Save Generated PIN
                             pin_generated = pinGen()
-                            qry_pin_generated = Pin.objects.create(
-                                pin=pin_generated,
-                                generator_id=qry_mjumbe.id,
-                                client_id=qry_mwananchi.id,
-                                project=project,
-                                service=service,
-                                status=status_valid
-                            )
-
-                            # pin_generated = str(pin_generated)
                             return HttpResponse(json.dumps({
                                 'messages': [
-                                    {'content': "Hakiki taarifa zifuatazo:\n"+
-                                                "Namba: "+qry_mwananchi.id+"\n"+
-                                                "Jina: "+qry_mwananchi.name+"\n"+
-                                                "Simu: "+qry_mwananchi.phone+"\n"+
-                                                "Kazi: "+qry_mwananchi.occupation+"\n"+
-                                                "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
-                                                "Kitamb. Namba: "+qry_mwananchi.id_number+"\n"+
-                                                "Kata: "+qry_mwananchi.kata+"\n"+
-                                                "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
-                                                "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
-                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
-                                    }
+                                    {'content': pin_generated}
                                 ]
                             }), 'application/json')
+                            # qry_mwananchi.step += 1
+                            # qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                            # qry_mwananchi.save()
+
+                            # # Save Generated PIN
+                            # pin_generated = pinGen()
+                            # qry_pin_generated = Pin.objects.create(
+                            #     pin=pin_generated,
+                            #     generator_id=qry_mjumbe.id,
+                            #     client_id=qry_mwananchi.id,
+                            #     project=project,
+                            #     service=service,
+                            #     status=status_valid
+                            # )
+
+                            # pin_generated = str(pin_generated)
+                            # return HttpResponse(json.dumps({
+                            #     'messages': [
+                            #         {'content': "Hakiki taarifa zifuatazo:\n"+
+                            #                     "Namba: "+qry_mwananchi.id+"\n"+
+                            #                     "Jina: "+qry_mwananchi.name+"\n"+
+                            #                     "Simu: "+qry_mwananchi.phone+"\n"+
+                            #                     "Kazi: "+qry_mwananchi.occupation+"\n"+
+                            #                     "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
+                            #                     "Kitamb. Namba: "+qry_mwananchi.id_number+"\n"+
+                            #                     "Kata: "+qry_mwananchi.kata+"\n"+
+                            #                     "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
+                            #                     "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
+                            #                     "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                            #                     "Mfano: THIBITISHA MNC-999-54865 7485."
+                            #         }
+                            #     ]
+                            # }), 'application/json')
                         else:
                             return HttpResponse(json.dumps({
                                 'messages': [
@@ -517,10 +529,16 @@ def webhook(request):
                             ]
                         }), 'application/json')
 
-            else:
+            elif qry_mjumbe.is_active=="No":
                 return HttpResponse(json.dumps({
                     'messages': [
                         {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na mtendaji wa mtaa wako kurudisha akaunti yako."}
+                    ]
+                }), 'application/json')
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Samahani, huwezi kufanya muamala huu."}
                     ]
                 }), 'application/json')
 
