@@ -495,8 +495,11 @@ def webhook(request):
                                                 "Simu: "+qry_mwananchi.phone+"\n"+
                                                 "Kazi: "+qry_mwananchi.occupation+"\n"+
                                                 "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
-                                                "Kitamb. Namba: "+qry_mwananchi.id_number+"\n"+
-                                                "Kata: "+pin_generated+"\n"+
+                                                "Kitamb. Namba: "+str(qry_mwananchi.id_number)+"\n"+
+                                                "Kata: "+qry_mwananchi.kata+"\n"+
+                                                "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
+                                                "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
                                                 "Mfano: THIBITISHA MNC-999-54865 7485."
                                     }
                                 ]
