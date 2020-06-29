@@ -474,7 +474,7 @@ def webhook(request):
                             pin_generated = pinGen()
                             return HttpResponse(json.dumps({
                                 'messages': [
-                                    {'content': "Msimbo: "+pin_generated}
+                                    {'content': "Msimbo: "+pin_generated+"."}
                                 ]
                             }), 'application/json')
                             # qry_mwananchi.step += 1
