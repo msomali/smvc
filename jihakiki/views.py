@@ -489,7 +489,12 @@ def webhook(request):
 
                             return HttpResponse(json.dumps({
                                 'messages': [
-                                    {'content': "Hakiki taarifa zifuatazo:\n"+pin_generated
+                                    {'content': "Hakiki taarifa zifuatazo:\n"+
+                                                "Namba: "+qry_mwananchi.id+"\n"+
+                                                "Jina: "+qry_mwananchi.name+"\n"+
+                                                "Simu: "+qry_mwananchi.phone+"\n"+
+                                                "Kazi: "+pin_generated+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 7485."
                                     }
                                 ]
                             }), 'application/json')
