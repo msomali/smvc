@@ -471,6 +471,12 @@ def webhook(request):
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
                         # Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
+                            # Disable Existing PIN Before Generating Another
+                            qry_pin = Pin.objects.filter(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service)
+                            if qry_pin:
+                                qry_pin = qry_pin.get(generator_id__exact=qry_mjumbe.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
 
                             # Save Generated PIN
                             pin_generated = pinGen()
