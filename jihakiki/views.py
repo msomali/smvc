@@ -523,7 +523,7 @@ def webhook(request):
             # Verification Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
                 # Check Auto Generated PIN
-                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mjumbe.id,project__exact=project, service__excat=service, status__exact="Valid")
+                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
