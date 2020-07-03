@@ -470,10 +470,7 @@ def webhook(request):
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
                         # Check Mwananchi Active and Verification status
-                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified":
-                            qry_mwananchi.step += 1
-                            qry_mwananchi.mjumbe_id = qry_mjumbe.id
-                            qry_mwananchi.save()
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
 
                             # Save Generated PIN
                             pin_generated = pinGen()
@@ -520,6 +517,48 @@ def webhook(request):
                         return HttpResponse(json.dumps({
                             'messages': [
                                 {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                            ]
+                        }), 'application/json')
+
+            # Verification Service
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
+                # Check Auto Generated PIN
+                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mjumbe.id,project__exact=project, service__excat=service, status__exact="Valid")
+
+                if int(keyword[2])==qry_pin_generated.pin:
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
+                    # Check for mwananchi
+                    if qry_mwananchi:
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
+                        # Check Mwananchi Active and Verification status
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
+                            qry_mwananchi.step += 1
+                            qry_mwananchi.mjumbe_id = qry_mjumbe.id
+                            qry_mwananchi.save()
+
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Ahsante, uhakiki wa awali wa taarifa za mwananchi mwenye namba ya usajili "+qry_mwananchi.id+
+                                                " umekamilika."
+                                    }
+                                ]
+                            }), 'application/json')
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili ya mwananchi imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
+                    else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya usajili ya mwananchi haipo."}
+                            ]
+                        }), 'application/json')
+                else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya msimbo wa siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 6 tu."}
                             ]
                         }), 'application/json')
 
