@@ -102,30 +102,30 @@ def webhook(request):
         message_type = "Convo"
 
         # Check Queries
-        # Mwananchi Check Queries
+        ## Mwananchi Check Queries
         qry_mwananchi = Mwananchi.objects.filter(phone__exact=from_number)
         qry_temp_mwananchi = TempMwananchi.objects.filter(phone__exact=from_number)
 
-        # Mjumbe Check Queries
+        ## Mjumbe Check Queries
         qry_mjumbe = Mjumbe.objects.filter(phone__exact=from_number)
         qry_temp_mjumbe = TempMjumbe.objects.filter(phone__exact=from_number)
 
-        # Mwenyekiti Check Queries
+        ## Mwenyekiti Check Queries
         qry_mwenyekiti = Mwenyekiti.objects.filter(phone__exact=from_number)
         qry_temp_mwenyekiti = TempMwenyekiti.objects.filter(phone__exact=from_number)
 
-        # VEO Check Queries
+        ## VEO Check Queries
         qry_veo = Veo.objects.filter(phone__exact=from_number)
         qry_temp_veo = TempVeo.objects.filter(phone__exact=from_number)
 
-        # WEO Check Queries
+        ## WEO Check Queries
         qry_weo = Weo.objects.filter(phone__exact=from_number)
 
         # Mwananchi Registered Query
         if qry_mwananchi:
             qry_mwananchi = qry_mwananchi.get(phone=from_number)
 
-            # Capture Functional Keyword
+            ## Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
 
             if qry_mwananchi.verification_status=="Unverified":
@@ -148,7 +148,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==1:
-                    # Return wasifu
+                    ### Return wasifu
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Wasifu wako:\n"+
@@ -156,7 +156,8 @@ def webhook(request):
                                         "Jina: "+qry_mwananchi.name+"\n"+
                                         "Simu: "+qry_mwananchi.phone+"\n"+
                                         "Kazi: "+qry_mwananchi.occupation+"\n"+
-                                        "Kitambulisho: "+qry_mwananchi.id_card+" "+qry_mwananchi.id_number+"\n"+
+                                        "Kitambulisho: "+qry_mwananchi.id_card+"\n"+
+                                        "Kitamb. Namba: "+str(qry_mwananchi.id_number)+"\n"+
                                         "Kata: "+qry_mwananchi.kata+"\n"+
                                         "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                         "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
@@ -166,11 +167,9 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==2:
-                    # Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
+                    ### Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
                     qry_mjumbe = Mjumbe.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
-
                     qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
-
                     qry_veo = Veo.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
@@ -189,7 +188,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==3:
-                    # Return mawasiliano ya uongozi wa kata
+                    ### Return mawasiliano ya uongozi wa kata
                     qry_weo = Weo.objects.get(kata__exact=qry_mwananchi.kata, is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
@@ -221,7 +220,7 @@ def webhook(request):
         elif qry_temp_mwananchi:
             qry_temp_mwananchi = TempMwananchi.objects.get(phone=from_number)
 
-            # Save Responses
+            ## Save Responses
             if qry_temp_mwananchi.step==1:
                 qry_temp_mwananchi.name = content.title()
                 qry_temp_mwananchi.step += 1
@@ -232,7 +231,7 @@ def webhook(request):
                 qry_temp_mwananchi.save()
 
             elif qry_temp_mwananchi.step==3:
-                # Check Ward
+                ### Check Ward
                 qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
                 if qry_ward:
                     qry_temp_mwananchi.kata = content.title()
@@ -246,7 +245,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mwananchi.step==4:
-                # Check Mtaa/Kijiji
+                ### Check Mtaa/Kijiji
                 qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwananchi.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mwananchi.mtaa_kijiji = content.title()
@@ -260,7 +259,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mwananchi.step==5:
-                # Check Kitongoji
+                ### Check Kitongoji
                 qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mwananchi.mtaa_kijiji, ward__exact=qry_temp_mwananchi.kata).distinct()
                 if qry_kitongoji:
                     qry_temp_mwananchi.kitongoji = content.title()
@@ -274,7 +273,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mwananchi.step==6:
-                # Check ID Name
+                ### Check ID Name
                 if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_mwananchi.id_card = content.title()
                     qry_temp_mwananchi.step += 1
@@ -288,7 +287,7 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==7:
 
-                # Check ID
+                ### Check ID
                 if len(content)<=20 and content.isdigit():
                     qry_temp_mwananchi.id_number = int(content)
                     qry_temp_mwananchi.step += 1
@@ -302,14 +301,14 @@ def webhook(request):
 
             elif qry_temp_mwananchi.step==8:
 
-                # Check PIN Length & Data Type
+                ### Check PIN Length & Data Type
                 if len(content)==4 and content.isdigit():
                     qry_temp_mwananchi.pin = int(content)
                     qry_temp_mwananchi.status = status_complete
                     qry_temp_mwananchi.step += 1
                     qry_temp_mwananchi.save()
 
-                    # Send Data to Mwananchi Table
+                    #### Send Data to Mwananchi Table
                     qry_temp_mwananchi = TempMwananchi.objects.get(phone=from_number)
                     qry_mwananchi = Mwananchi.objects.create(
                                                         id=qry_temp_mwananchi.id,
@@ -327,10 +326,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from TempMwananchi Table
+                    #### Delete Data from TempMwananchi Table
                     qry_temp_mwananchi.delete()
 
-                    # Notify Mwenyekiti via SMS on completion of Mwananchi registration
+                    #### Notify Mwenyekiti via SMS on completion of Mwananchi registration
                     qry_mwenyekiti = Mwenyekiti.objects.filter(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, is_active__exact="Yes")
                     qry_mwenyekiti = qry_mwenyekiti.get(verification_status__exact="Verified")
 
@@ -386,7 +385,7 @@ def webhook(request):
         elif qry_mjumbe:
             qry_mjumbe = qry_mjumbe.get(phone=from_number)
 
-            # Capture Functional Keyword
+            ## Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
 
             if qry_mjumbe.verification_status=="Unverified":
@@ -396,7 +395,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            # Services available under Mjumbe Keyword
+            ## Services available under Mjumbe Keyword
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="MJUMBE":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
@@ -410,14 +409,15 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==1:
-                    # Return wasifu
+                    ### Return wasifu
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Wasifu wako:\n"+
                                         "Namba: "+qry_mjumbe.id+"\n"+
                                         "Jina: "+qry_mjumbe.name+"\n"+
                                         "Simu: "+qry_mjumbe.phone+"\n"+
-                                        "Kitambulisho: "+qry_mjumbe.id_card+" "+qry_mjumbe.id_number+"\n"+
+                                        "Kitambulisho: "+qry_mjumbe.id_card+"\n"+
+                                        "Kitamb. Namba: "+str(qry_mjumbe.id_number)+"\n"+
                                         "Kata: "+qry_mjumbe.kata+"\n"+
                                         "Mtaa/Kijiji: "+qry_mjumbe.mtaa_kijiji+"\n"+
                                         "Kitongoji: "+qry_mjumbe.kitongoji+"\n"+
@@ -428,7 +428,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==2:
-                    # Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
+                    ### Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
                     qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
 
                     qry_veo = Veo.objects.get(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
@@ -446,7 +446,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==3:
-                    # Return mawasiliano ya uongozi wa kata
+                    ### Return mawasiliano ya uongozi wa kata
                     qry_weo = Weo.objects.get(kata__exact=qry_mjumbe.kata, is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
@@ -461,28 +461,28 @@ def webhook(request):
                 else:
                     pass
 
-            # Review Service
+            ## Review Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
-                
-                # Check PIN
+
+                ### Check PIN
                 if int(keyword[2])==qry_mjumbe.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
-                    
-                    # Check for mwananchi
+
+                    #### Check for mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mwananchi Active and Verification status
+
+                        ##### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
-                            
-                            # Disable Existing PIN Before Generating Another
+
+                            ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_mjumbe.id)
                                 qry_pin.status = "Invalid"
                                 qry_pin.save()
 
-                            # Save Generated PIN
+                            ###### Save Generated PIN
                             pin_generated = pinGen()
 
                             qry_pin_generated = Pin.objects.create(
@@ -507,7 +507,7 @@ def webhook(request):
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
                                                 "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
@@ -530,20 +530,20 @@ def webhook(request):
                             ]
                         }), 'application/json')
 
-            # Verification Service
+            ## Verification Service
             elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
-                
-                # Check Auto Generated PIN
+
+                ### Check Auto Generated PIN
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
-                    
-                    # Check for mwananchi
+
+                    #### Check for mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mwananchi Active and Verification status
+
+                        ##### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
                             qry_mwananchi.step += 1
                             qry_mwananchi.mjumbe_id = qry_mjumbe.id
@@ -592,14 +592,14 @@ def webhook(request):
         elif qry_temp_mjumbe:
             qry_temp_mjumbe = TempMjumbe.objects.get(phone=from_number)
 
-            # Save Responses
+            ## Save Responses
             if qry_temp_mjumbe.step==1:
                 qry_temp_mjumbe.name = content.title()
                 qry_temp_mjumbe.step += 1
                 qry_temp_mjumbe.save()
 
             elif qry_temp_mjumbe.step==2:
-                # Check Ward
+                ### Check Ward
                 qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
                 if qry_ward:
                     qry_temp_mjumbe.kata = content.title()
@@ -613,7 +613,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mjumbe.step==3:
-                # Check Mtaa/Kijiji
+                ### Check Mtaa/Kijiji
                 qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mjumbe.mtaa_kijiji = content.title()
@@ -627,7 +627,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mjumbe.step==4:
-                # Check Kitongoji
+                ### Check Kitongoji
                 qry_kitongoji = PostCode.objects.filter(kitongoji__exact=content.title(), mtaa_kijiji__exact=qry_temp_mjumbe.mtaa_kijiji, ward__exact=qry_temp_mjumbe.kata).distinct()
                 if qry_kitongoji:
                     qry_temp_mjumbe.kitongoji = content.title()
@@ -642,7 +642,7 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==5:
 
-                # Check Shina Length & Data Type
+                ### Check Shina Length & Data Type
                 if len(content)<=3 and content.isdigit():
                     qry_temp_mjumbe.shina = content
                     qry_temp_mjumbe.step += 1
@@ -656,7 +656,7 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==6:
 
-                # Check ID Name
+                ### Check ID Name
                 if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_mjumbe.id_card = content.title()
                     qry_temp_mjumbe.step += 1
@@ -670,7 +670,7 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==7:
 
-                # Check ID Number
+                ### Check ID Number
                 if len(content)<=20 and content.isdigit():
                     qry_temp_mjumbe.id_number = int(content)
                     qry_temp_mjumbe.step += 1
@@ -684,14 +684,14 @@ def webhook(request):
 
             elif qry_temp_mjumbe.step==8:
 
-                # Check PIN Length & Data Type
+                ### Check PIN Length & Data Type
                 if len(content)==4 and content.isdigit():
                     qry_temp_mjumbe.pin = int(content)
                     qry_temp_mjumbe.status = status_complete
                     qry_temp_mjumbe.step += 1
                     qry_temp_mjumbe.save()
 
-                    # Send Data to Mjumbe Table
+                    #### Send Data to Mjumbe Table
                     qry_temp_mjumbe = TempMjumbe.objects.get(phone=from_number)
                     qry_mjumbe = Mjumbe.objects.create(
                                                         id=qry_temp_mjumbe.id,
@@ -709,10 +709,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from TempMjumbe Table
+                    #### Delete Data from TempMjumbe Table
                     qry_temp_mjumbe.delete()
 
-                    # Notify VEO via SMS on completion of Mjumbe registration
+                    #### Notify VEO via SMS on completion of Mjumbe registration
                     qry_veo = Veo.objects.filter(kata__exact=qry_mjumbe.kata, mtaa_kijiji__exact=qry_mjumbe.mtaa_kijiji, is_active__exact="Yes")
                     qry_veo = qry_veo.get(verification_status__exact="Verified")
 
@@ -746,7 +746,7 @@ def webhook(request):
                     }), 'application/json')
 
             else:
-                # To be replaced by pass
+                ### To be replaced by pass
                 return HttpResponse(json.dumps({
                     'messages': [
                         {'content': "Invalid Step! Contact System Admin!"}
@@ -769,7 +769,7 @@ def webhook(request):
         elif qry_mwenyekiti:
             qry_mwenyekiti = Mwenyekiti.objects.get(phone=from_number)
 
-            # Capture Functional Keyword
+            ### Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
 
             if qry_mwenyekiti.verification_status=="Unverified":
@@ -779,7 +779,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            # Services available under Mwenyekiti Keyword
+            ### Services available under Mwenyekiti Keyword
             elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="MWENYEKITI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
@@ -793,14 +793,15 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==1:
-                    # Return wasifu
+                    #### Return wasifu
                     return HttpResponse(json.dumps({
                         'messages': [
                             {'content': "Wasifu wako:\n"+
                                         "Namba: "+qry_mwenyekiti.id+"\n"+
                                         "Jina: "+qry_mwenyekiti.name+"\n"+
                                         "Simu: "+qry_mwenyekiti.phone+"\n"+
-                                        "Kitambulisho: "+qry_mwenyekiti.id_card+" "+qry_mwenyekiti.id_number+"\n"+
+                                        "Kitambulisho: "+qry_mwenyekiti.id_card+"\n"+
+                                        "Kitamb. Namba: "+str(qry_mwenyekiti.id_number)+"\n"+
                                         "Kata: "+qry_mwenyekiti.kata+"\n"+
                                         "Mtaa/Kijiji: "+qry_mwenyekiti.mtaa_kijiji+"\n"+
                                         "Jihakiki: "+qry_mwenyekiti.verification_status
@@ -809,7 +810,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==2:
-                    # Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
+                    #### Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
                     qry_veo = Veo.objects.get(kata__exact=qry_mwenyekiti.kata, mtaa_kijiji__exact=qry_mwenyekiti.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
@@ -822,7 +823,7 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==3:
-                    # Return mawasiliano ya uongozi wa kata
+                    #### Return mawasiliano ya uongozi wa kata
                     qry_weo = Weo.objects.get(kata__exact=qry_mwenyekiti.kata, is_active__exact="Yes")
 
                     return HttpResponse(json.dumps({
@@ -837,30 +838,30 @@ def webhook(request):
                 else:
                     pass
 
-            # Review Service
+            ### Review Service
             elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="HAKIKI"and qry_mwenyekiti.step==3:
-                
-                # Check PIN
+
+                #### Check PIN
                 if int(keyword[2])==qry_mwenyekiti.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
 
                     qry_mjumbe = Mjumbe.objects.filter(id__exact=keyword[1].upper())
-                    
-                    # Check for Mwananchi
+
+                    ##### Check for Mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mwananchi Active and Verification status
+
+                        ###### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==2:
-                            
-                            # Disable Existing PIN Before Generating Another
+
+                            ####### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id)
                                 qry_pin.status = "Invalid"
                                 qry_pin.save()
 
-                            # Save Generated PIN
+                            ####### Save Generated PIN
                             pin_generated = pinGen()
 
                             qry_pin_generated = Pin.objects.create(
@@ -885,7 +886,7 @@ def webhook(request):
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
                                                 "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
@@ -896,21 +897,21 @@ def webhook(request):
                                 ]
                             }), 'application/json')
 
-                    # Check for Mjumbe
+                    ##### Check for Mjumbe
                     elif qry_mjumbe:
                         qry_mjumbe = qry_mjumbe.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mjumbe Active and Verification status
+
+                        ###### Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
-                            
-                            # Disable Existing PIN Before Generating Another
+
+                            ####### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id)
                                 qry_pin.status = "Invalid"
                                 qry_pin.save()
 
-                            # Save Generated PIN
+                            ####### Save Generated PIN
                             pin_generated = pinGen()
 
                             qry_pin_generated = Pin.objects.create(
@@ -928,15 +929,14 @@ def webhook(request):
                                                 "Namba: "+qry_mjumbe.id+"\n"+
                                                 "Jina: "+qry_mjumbe.name+"\n"+
                                                 "Simu: "+qry_mjumbe.phone+"\n"+
-                                                "Kazi: "+qry_mjumbe.occupation+"\n"+
                                                 "Kitambulisho: "+qry_mjumbe.id_card+"\n"+
                                                 "Kitamb. Namba: "+str(qry_mjumbe.id_number)+"\n"+
                                                 "Kata: "+qry_mjumbe.kata+"\n"+
                                                 "Mtaa/Kijiji: "+qry_mjumbe.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mjumbe.kitongoji+"\n"+
                                                 "Shina: "+qry_mjumbe.shina+"\n"+
-                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mjumbe, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
@@ -960,20 +960,20 @@ def webhook(request):
                             ]
                         }), 'application/json')
 
-            # Verification Service
+            ### Verification Service
             elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="THIBITISHA" and qry_mwenyekiti.step==3:
-                
-                # Check Auto Generated PIN
+
+                #### Check Auto Generated PIN
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
-                    
-                    # Check for Mwananchi
+
+                    ##### Check for Mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mwananchi Active and Verification status
+
+                        ###### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
                             qry_mwananchi.step += 1
                             qry_mwananchi.veo_id = qry_mwenyekiti.id
@@ -993,11 +993,11 @@ def webhook(request):
                                 ]
                             }), 'application/json')
 
-                    # Check for Mjumbe
+                    ##### Check for Mjumbe
                     elif qry_mjumbe:
                         qry_mjumbe = qry_mjumbe.get(id__exact=keyword[1].upper())
-                        
-                        # Check Mjumbe Active and Verification status
+
+                        ###### Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
                             qry_mjumbe.step += 1
                             qry_mjumbe.veo_id = qry_mwenyekiti.id
@@ -1046,14 +1046,14 @@ def webhook(request):
         elif qry_temp_mwenyekiti:
             qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
 
-            # Save Responses
+            ## Save Responses
             if qry_temp_mwenyekiti.step==1:
                 qry_temp_mwenyekiti.name = content.title()
                 qry_temp_mwenyekiti.step += 1
                 qry_temp_mwenyekiti.save()
 
             elif qry_temp_mwenyekiti.step==2:
-                # Check Ward
+                ### Check Ward
                 qry_ward = PostCode.objects.filter(ward__exact=content.title()).distinct()
                 if qry_ward:
                     qry_temp_mwenyekiti.kata = content.title()
@@ -1067,7 +1067,7 @@ def webhook(request):
                     }), 'application/json')
 
             elif qry_temp_mwenyekiti.step==3:
-                # Check Mtaa/Kijiji
+                ### Check Mtaa/Kijiji
                 qry_mtaa_kijiji = PostCode.objects.filter(mtaa_kijiji__exact=content.title(), ward__exact=qry_temp_mwenyekiti.kata).distinct()
                 if qry_mtaa_kijiji:
                     qry_temp_mwenyekiti.mtaa_kijiji = content.title()
@@ -1082,7 +1082,7 @@ def webhook(request):
 
             elif qry_temp_mwenyekiti.step==4:
 
-                # Check ID Name
+                ### Check ID Name
                 if content.upper() in ["NIDA", "KURA", "LESENI"]:
                     qry_temp_mwenyekiti.id_card = content.title()
                     qry_temp_mwenyekiti.step += 1
@@ -1096,7 +1096,7 @@ def webhook(request):
 
             elif qry_temp_mwenyekiti.step==5:
 
-                # Check ID
+                ### Check ID
                 if len(content)<=20 and content.isdigit():
                     qry_temp_mwenyekiti.id_number = int(content)
                     qry_temp_mwenyekiti.step += 1
@@ -1110,14 +1110,14 @@ def webhook(request):
 
             elif qry_temp_mwenyekiti.step==6:
 
-                # Check PIN Length & Data Type
+                ### Check PIN Length & Data Type
                 if len(content)==4 and content.isdigit():
                     qry_temp_mwenyekiti.pin = int(content)
                     qry_temp_mwenyekiti.status = status_complete
                     qry_temp_mwenyekiti.step += 1
                     qry_temp_mwenyekiti.save()
 
-                    # Send Data to Mwenyekiti Table
+                    #### Send Data to Mwenyekiti Table
                     qry_temp_mwenyekiti = TempMwenyekiti.objects.get(phone=from_number)
                     qry_mwenyekiti = Mwenyekiti.objects.create(
                                                         id=qry_temp_mwenyekiti.id,
@@ -1133,10 +1133,10 @@ def webhook(request):
                                                         verification_status=status_unverified
                                                     )
 
-                    # Delete Data from TempMwenyekiti Table
+                    #### Delete Data from TempMwenyekiti Table
                     qry_temp_mwenyekiti.delete()
 
-                    # Notify WEO via SMS on completion of Mwenyekiti registration
+                    #### Notify WEO via SMS on completion of Mwenyekiti registration
                     qry_weo = Weo.objects.filter(kata__exact=qry_mwenyekiti.kata)
                     qry_weo = qry_weo.get(is_active__exact="Yes")
 
@@ -1169,7 +1169,7 @@ def webhook(request):
                     }), 'application/json')
 
             else:
-                # To be replaced by pass
+                ### To be replaced by pass
                 return HttpResponse(json.dumps({
                     'messages': [
                         {'content': "Invalid Step! Contact System Administrator!"}
@@ -1202,7 +1202,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            # Services available under Mwenyekiti Keyword
+            # Services available under VEO Keyword
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
@@ -1262,20 +1262,20 @@ def webhook(request):
 
             # Review Service
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
-                
+
                 # Check PIN
                 if int(keyword[2])==qry_veo.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
 
                     qry_mjumbe = Mjumbe.objects.filter(id__exact=keyword[1].upper())
-                    
+
                     # Check for Mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
+
                         # Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==2:
-                            
+
                             # Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
                             if qry_pin:
@@ -1308,7 +1308,7 @@ def webhook(request):
                                                 "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mwananchi.kitongoji+"\n"+
                                                 "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
@@ -1322,10 +1322,10 @@ def webhook(request):
                     # Check for Mjumbe
                     elif qry_mjumbe:
                         qry_mjumbe = qry_mjumbe.get(id__exact=keyword[1].upper())
-                        
+
                         # Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
-                            
+
                             # Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
                             if qry_pin:
@@ -1351,7 +1351,6 @@ def webhook(request):
                                                 "Namba: "+qry_mjumbe.id+"\n"+
                                                 "Jina: "+qry_mjumbe.name+"\n"+
                                                 "Simu: "+qry_mjumbe.phone+"\n"+
-                                                "Kazi: "+qry_mjumbe.occupation+"\n"+
                                                 "Kitambulisho: "+qry_mjumbe.id_card+"\n"+
                                                 "Kitamb. Namba: "+str(qry_mjumbe.id_number)+"\n"+
                                                 "Kata: "+qry_mjumbe.kata+"\n"+
@@ -1359,7 +1358,7 @@ def webhook(request):
                                                 "Kitongoji: "+qry_mjumbe.kitongoji+"\n"+
                                                 "Shina: "+qry_mjumbe.shina+"\n"+
                                                 "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
-                                                "Mfano: THIBITISHA MNC-999-54865 7485."
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
@@ -1385,17 +1384,19 @@ def webhook(request):
 
             # Verification Service
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
-                
+
                 # Check Auto Generated PIN
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
-                    
+
+                    qry_mjumbe = Mjumbe.get(id__exact=keyword[1].upper())
+
                     # Check for Mwananchi
                     if qry_mwananchi:
                         qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
-                        
+
                         # Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==2:
                             qry_mwananchi.step += 1
@@ -1419,7 +1420,7 @@ def webhook(request):
                     # Check for Mjumbe
                     elif qry_mjumbe:
                         qry_mjumbe = qry_mjumbe.get(id__exact=keyword[1].upper())
-                        
+
                         # Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
                             qry_mjumbe.step += 1
@@ -1610,12 +1611,243 @@ def webhook(request):
                 ]
             }), 'application/json')
 
-        # WEO Registration Queries
+        # WEO Registered Query
         elif qry_weo:
             qry_weo = Weo.objects.get(phone=from_number)
 
             # Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
+
+            # Services available under WEO Keyword
+            if qry_weo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
+                if content.strip().isdigit()==False:
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Karibu JIHAKIKI: "+qry_weo.name+"\n"+
+                                        "1. Wasifu wako."
+                            }
+                        ]
+                    }), 'application/json')
+
+                elif int(content.strip())==1:
+                    # Return wasifu
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Wasifu wako:\n"+
+                                        "Namba: "+qry_weo.id+"\n"+
+                                        "Jina: "+qry_weo.name+"\n"+
+                                        "Simu: "+qry_weo.phone+"\n"+
+                                        "Kitambulisho: "+qry_weo.id_card+" "+qry_weo.id_number+"\n"+
+                                        "Kata: "+qry_weo.kata+"\n"+
+                                        "Mtaa/Kijiji: "+qry_weo.mtaa_kijiji+"\n"+
+                                        "Jihakiki: "+qry_weo.verification_status
+                            }
+                        ]
+                    }), 'application/json')
+                else:
+                    pass
+
+            # Review Service
+            elif qry_weo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
+
+                # Check PIN
+                if int(keyword[2])==qry_weo.pin:
+                    qry_mwenyekiti = Mwenyekiti.objects.filter(id__exact=keyword[1].upper())
+
+                    qry_veo = Veo.objects.filter(id__exact=keyword[1].upper())
+
+                    # Check for Mwenyekiti
+                    if qry_mwenyekiti:
+                        qry_mwenyekiti = qry_mwenyekiti.get(id__exact=keyword[1].upper())
+
+                        # Check Mwenyekiti Active and Verification status
+                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status=="Unverified" and qry_mwenyekiti.step==1:
+
+                            # Disable Existing PIN Before Generating Another
+                            qry_pin = Pin.objects.filter(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service)
+                            if qry_pin:
+                                qry_pin = qry_pin.get(generator_id__exact=qry_weo.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
+
+                            # Save Generated PIN
+                            pin_generated = pinGen()
+
+                            qry_pin_generated = Pin.objects.create(
+                                pin=pin_generated,
+                                generator_id=qry_weo.id,
+                                client_id=qry_mwenyekiti.id,
+                                project=project,
+                                service=service,
+                                status=status_valid
+                            )
+
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Hakiki taarifa zifuatazo:\n"+
+                                                "Namba: "+qry_mwenyekiti.id+"\n"+
+                                                "Jina: "+qry_mwenyekiti.name+"\n"+
+                                                "Simu: "+qry_mwenyekiti.phone+"\n"+
+                                                "Kitambulisho: "+qry_mwenyekiti.id_card+"\n"+
+                                                "Kitamb. Namba: "+str(qry_mwenyekiti.id_number)+"\n"+
+                                                "Kata: "+qry_mwenyekiti.kata+"\n"+
+                                                "Mtaa/Kijiji: "+qry_mwenyekiti.mtaa_kijiji+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mwenyekiti, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
+                                    }
+                                ]
+                            }), 'application/json')
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili uliyoingiza imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
+
+                    # Check for Veo
+                    elif qry_veo:
+                        qry_veo = qry_veo.get(id__exact=keyword[1].upper())
+
+                        # Check Mwenyekiti Active and Verification status
+                        if qry_veo.is_active=="Yes" and qry_veo.verification_status=="Unverified" and qry_veo.step==1:
+
+                            # Disable Existing PIN Before Generating Another
+                            qry_pin = Pin.objects.filter(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service)
+                            if qry_pin:
+                                qry_pin = qry_pin.get(generator_id__exact=qry_weo.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
+
+                            # Save Generated PIN
+                            pin_generated = pinGen()
+
+                            qry_pin_generated = Pin.objects.create(
+                                pin=pin_generated,
+                                generator_id=qry_weo.id,
+                                client_id=qry_veo.id,
+                                project=project,
+                                service=service,
+                                status=status_valid
+                            )
+
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Hakiki taarifa zifuatazo:\n"+
+                                                "Namba: "+qry_veo.id+"\n"+
+                                                "Jina: "+qry_veo.name+"\n"+
+                                                "Simu: "+qry_veo.phone+"\n"+
+                                                "Kitambulisho: "+qry_veo.id_card+"\n"+
+                                                "Kitamb. Namba: "+str(qry_veo.id_number)+"\n"+
+                                                "Kata: "+qry_veo.kata+"\n"+
+                                                "Mtaa/Kijiji: "+qry_veo.mtaa_kijiji+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mtendaji, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
+                                    }
+                                ]
+                            }), 'application/json')
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili uliyoingiza imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
+
+                    else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya usajili uliyoingiza haipo."}
+                            ]
+                        }), 'application/json')
+                else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
+                            ]
+                        }), 'application/json')
+
+            # Verification Service
+            elif qry_weo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
+
+                # Check Auto Generated PIN
+                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service, status__exact="Valid")
+
+                if int(keyword[2])==qry_pin_generated.pin:
+                    qry_mwenyekiti = Mwenyekiti.objects.filter(id__exact=keyword[1].upper())
+
+                    qry_veo = Veo.objects.filter(id__exact=keyword[1].upper())
+
+                    # Check for Mwenyekiti
+                    if qry_mwenyekiti:
+                        qry_mwenyekiti = qry_mwenyekiti.get(id__exact=keyword[1].upper())
+
+                        # Check Mwenyekiti Active and Verification status
+                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status=="Unverified" and qry_mwenyekiti.step==1:
+                            qry_mwenyekiti.step += 1
+                            qry_mwenyekiti.weo_id = qry_weo.id
+                            qry_mwenyekiti.save()
+
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Ahsante, uhakiki wa taarifa za mwenyekiti mwenye namba ya usajili "+qry_mwenyekiti.id+
+                                                " umekamilika."
+                                    }
+                                ]
+                            }), 'application/json')
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili ya mwenyekiti imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
+
+                    # Check for VEO
+                    elif qry_veo:
+                        qry_veo = qry_veo.get(id__exact=keyword[1].upper())
+
+                        # Check VEO Active and Verification status
+                        if qry_veo.is_active=="Yes" and qry_veo.verification_status=="Unverified" and qry_veo.step==1:
+                            qry_veo.step += 1
+                            qry_veo.weo_id = qry_weo.id
+                            qry_veo.save()
+
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Ahsante, uhakiki wa taarifa za mtendaji mwenye namba ya usajili "+qry_veo.id+
+                                                " umekamilika."
+                                    }
+                                ]
+                            }), 'application/json')
+                        else:
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Samahani, namba ya usajili ya mtendaji imeshahakikiwa au imesitishwa."}
+                                ]
+                            }), 'application/json')
+                    else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya usajili uliyoingiza haipo."}
+                            ]
+                        }), 'application/json')
+                else:
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Samahani, namba ya msimbo wa siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 6 tu."}
+                            ]
+                        }), 'application/json')
+
+            elif qry_weo.is_active=="No":
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Samahani, akaunti yako imesitishwa. Tafadhali wasiliana na kitengo cha Tehama cha Halmashauri yako kurudisha akaunti yako."}
+                    ]
+                }), 'application/json')
+            else:
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Samahani, huwezi kufanya muamala huu."}
+                    ]
+                }), 'application/json')
 
 
         # New account creation for Mwananchi, Mjumbe & VEO
