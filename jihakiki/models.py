@@ -184,13 +184,14 @@ class Barua(models.Model):
     """Model for storing Barua from Mjumbe with no phone for Jihakiki data"""
     veo_id = models.CharField(max_length=13)
     mwananchi_id = models.CharField(max_length=13, null=True)
-    reference = models.CharField(unique=True, max_length=200, null=True)
+    reference_number = models.CharField(unique=True, max_length=200, null=True)
     mjumbe_name = models.CharField(max_length=200, null=True)
     shina = models.IntegerField(null=True)
     kitongoji = models.CharField(max_length=200, null=True)
     mtaa_kijiji = models.CharField(max_length=200)
     kata = models.CharField(max_length=200)
     date_created = models.DateTimeField(auto_now_add=True)
+    step = models.IntegerField()
     status = models.CharField(max_length=20)
 
 
@@ -220,6 +221,7 @@ class KeywordMessage(models.Model):
     step = models.IntegerField()
     project = models.CharField(max_length=20)
     service = models.CharField(max_length=20)
+    section = models.CharField(max_length=20)
     member = models.CharField(max_length=20)
     date_created = models.DateTimeField(auto_now_add=True)
 
