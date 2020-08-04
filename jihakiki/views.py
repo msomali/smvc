@@ -2060,7 +2060,7 @@ def webhook(request):
             keyword = content.split(' ', maxsplit=2)
 
             ## Services available under WEO Keyword
-            if qry_weo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
+            if qry_weo.is_active=="Yes" or keyword[0].upper()=="MTENDAJI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
