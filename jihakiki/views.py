@@ -136,7 +136,7 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and keyword[0].upper()=="JIHAKIKI":
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" or keyword[0].upper()=="JIHAKIKI":
                 if content.strip().isdigit()==False:
 
                     ### If Priviledged To Be JEMBE
@@ -411,7 +411,7 @@ def webhook(request):
                 }), 'application/json')
 
             ## Services available under Mjumbe Keyword
-            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="MJUMBE":
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" or keyword[0].upper()=="MJUMBE":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -800,7 +800,7 @@ def webhook(request):
                 }), 'application/json')
 
             ### Services available under Mwenyekiti Keyword
-            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="MWENYEKITI":
+            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" or keyword[0].upper()=="MWENYEKITI":
                 if content.strip().isdigit()==False:
 
                     #### If Priviledged To Do Verification
@@ -1438,7 +1438,7 @@ def webhook(request):
                 }), 'application/json')
 
             ## Services available under VEO Keyword
-            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
+            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" or keyword[0].upper()=="MTENDAJI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -2060,7 +2060,7 @@ def webhook(request):
             keyword = content.split(' ', maxsplit=2)
 
             ## Services available under WEO Keyword
-            if qry_weo.is_active=="Yes" or keyword[0].upper()=="MTENDAJI":
+            if qry_weo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -2098,8 +2098,24 @@ def webhook(request):
                         ]
                     }), 'application/json')
 
+                elif int(content.strip())==3:
+                    ### Return mawasiliano ya uongozi wa mtaa/kitongoji
+                    return HttpResponse(json.dumps({
+                        'messages': [
+                            {'content': "Huduma hii itakujia hivi karibuni!"
+                            }
+                        ]
+                    }), 'application/json')
+
                 else:
                     pass
+
+            ## Wezesha Service
+            '''elif qry_weo.is_active=="Yes" and keyword[0].upper()=="WEZESHA":
+
+                ### Check PIN
+                if int(keyword[2])==qry_weo.pin:
+                    qry_mwenyekiti = Mwenyekiti.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_weo.kata)'''
 
             ## Review Service
             elif qry_weo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
