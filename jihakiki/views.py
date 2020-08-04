@@ -2110,13 +2110,6 @@ def webhook(request):
                 else:
                     pass
 
-            ## Wezesha Service
-            '''elif qry_weo.is_active=="Yes" and keyword[0].upper()=="WEZESHA":
-
-                ### Check PIN
-                if int(keyword[2])==qry_weo.pin:
-                    qry_mwenyekiti = Mwenyekiti.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_weo.kata)'''
-
             ## Review Service
             elif qry_weo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
 
