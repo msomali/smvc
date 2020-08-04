@@ -1508,8 +1508,7 @@ def webhook(request):
                 else:
                     pass
 
-            ### Barua Service
-            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="BARUA":
+            
 
                 #### Check for Partial Barua by VEO
                 qry_barua = Barua.objects.filter(veo_id__exact=qry_veo.id, step=step, status=status_partial)
