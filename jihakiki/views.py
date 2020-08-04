@@ -2049,12 +2049,12 @@ def webhook(request):
 
         # WEO Registered Query
         elif qry_weo:
-            return HttpResponse(json.dumps({
+            '''return HttpResponse(json.dumps({
                 'messages': [
                     {'content': "WEO Ipo!"}
                 ]
-            }), 'application/json')
-            '''qry_weo = Weo.objects.get(phone=from_number)
+            }), 'application/json')'''
+            qry_weo = Weo.objects.get(phone=from_number)
 
             ## Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
@@ -2313,7 +2313,7 @@ def webhook(request):
                     'messages': [
                         {'content': "Samahani, huwezi kufanya muamala huu."}
                     ]
-                }), 'application/json')'''
+                }), 'application/json')
 
 
         # New account creation for Mwananchi, Mjumbe & VEO
