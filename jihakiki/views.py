@@ -2082,9 +2082,7 @@ def webhook(request):
                                         "Simu: "+qry_weo.phone+"\n"+
                                         "Kitambulisho: "+qry_weo.id_card+"\n"+
                                         "Kitamb. Namba: "+str(qry_weo.id_number)+"\n"+
-                                        "Kata: "+qry_weo.kata+"\n"+
-                                        "Mtaa/Kijiji: "+qry_weo.mtaa_kijiji+"\n"+
-                                        "Jihakiki: "+qry_weo.verification_status
+                                        "Kata: "+qry_weo.kata
                             }
                         ]
                     }), 'application/json')
