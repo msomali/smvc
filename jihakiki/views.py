@@ -84,9 +84,11 @@ def webhook(request):
         postcode = "999"
         randno = random.randint(10000, 99999)
         status_unverified = "Unverified"
+        status_verified = "Verified"
         status_partial = "Partial"
         status_complete = "Complete"
         status_valid = "Valid"
+        status_invalid = "Invalid"
         is_active = "Yes"
         mncID = "MNC-"+postcode+"-"+str(randno)
         mjbID = "MJB-"+postcode+"-"+str(randno)
@@ -2049,18 +2051,13 @@ def webhook(request):
 
         # WEO Registered Query
         elif qry_weo:
-            '''return HttpResponse(json.dumps({
-                'messages': [
-                    {'content': "WEO Ipo!"}
-                ]
-            }), 'application/json')'''
             qry_weo = Weo.objects.get(phone=from_number)
 
             ## Capture Functional Keyword
             keyword = content.split(' ', maxsplit=2)
 
             ## Services available under WEO Keyword
-            if qry_weo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI":
+            if qry_weo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI" or content.strip().isdigit()==True:
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -2124,13 +2121,13 @@ def webhook(request):
                         qry_mwenyekiti = qry_mwenyekiti.get(id__exact=keyword[1].upper())
 
                         ##### Check Mwenyekiti Active and Verification status
-                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status=="Unverified" and qry_mwenyekiti.step==1:
+                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status==status_unverified and qry_mwenyekiti.step==1:
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_weo.id)
-                                qry_pin.status = "Invalid"
+                                qry_pin.status = status_invalid
                                 qry_pin.save()
 
                             ###### Save Generated PIN
@@ -2172,13 +2169,13 @@ def webhook(request):
                         qry_veo = qry_veo.get(id__exact=keyword[1].upper())
 
                         ##### Check Mwenyekiti Active and Verification status
-                        if qry_veo.is_active=="Yes" and qry_veo.verification_status=="Unverified" and qry_veo.step==1:
+                        if qry_veo.is_active=="Yes" and qry_veo.verification_status==status_unverified and qry_veo.step==1:
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_weo.id)
-                                qry_pin.status = "Invalid"
+                                qry_pin.status = status_invalid
                                 qry_pin.save()
 
                             ###### Save Generated PIN
@@ -2232,9 +2229,14 @@ def webhook(request):
             elif qry_weo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
 
                 ### Check Auto Generated PIN
-                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service, status__exact="Valid")
+                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service, status__exact=status_valid)
 
                 if int(keyword[2])==qry_pin_generated.pin:
+
+                    #### Update PIN Status
+                    qry_pin_generated.status = status_invalid
+                    qry_pin_generated.save()
+
                     qry_mwenyekiti = Mwenyekiti.objects.filter(id__exact=keyword[1].upper())
 
                     qry_veo = Veo.objects.filter(id__exact=keyword[1].upper())
@@ -2243,9 +2245,10 @@ def webhook(request):
                     if qry_mwenyekiti:
                         qry_mwenyekiti = qry_mwenyekiti.get(id__exact=keyword[1].upper())
 
-                        ##### Check Mwenyekiti Active and Verification status
-                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status=="Unverified" and qry_mwenyekiti.step==1:
+                        ##### Check Mwenyekiti & Verify
+                        if qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.verification_status==status_unverified and qry_mwenyekiti.step==1:
                             qry_mwenyekiti.step += 1
+                            qry_mwenyekiti.verification_status = status_verified
                             qry_mwenyekiti.weo_id = qry_weo.id
                             qry_mwenyekiti.save()
 
@@ -2272,9 +2275,10 @@ def webhook(request):
                     elif qry_veo:
                         qry_veo = qry_veo.get(id__exact=keyword[1].upper())
 
-                        ##### Check VEO Active and Verification status
-                        if qry_veo.is_active=="Yes" and qry_veo.verification_status=="Unverified" and qry_veo.step==1:
+                        ##### Check VEO & Verify
+                        if qry_veo.is_active=="Yes" and qry_veo.verification_status==status_unverified and qry_veo.step==1:
                             qry_veo.step += 1
+                            qry_veo.verification_status = status_verified
                             qry_veo.weo_id = qry_weo.id
                             qry_veo.save()
 
