@@ -1849,7 +1849,7 @@ def webhook(request):
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
 
                 ### Check PIN
-                '''if int(keyword[2])==qry_veo.pin:
+                if int(keyword[2])==qry_veo.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
 
                     qry_mjumbe = Mjumbe.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
@@ -1912,7 +1912,12 @@ def webhook(request):
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
 
                             ###### Disable Existing PIN Before Generating Another
-                            qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
+                            return HttpResponse(json.dumps({
+                                'messages': [
+                                    {'content': "Yupo"}
+                                ]
+                            }), 'application/json')
+                            '''qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
                                 qry_pin.status = status_invalid
@@ -1946,7 +1951,7 @@ def webhook(request):
                                                 "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
-                            }), 'application/json')
+                            }), 'application/json')'''
                         else:
                             return HttpResponse(json.dumps({
                                 'messages': [
@@ -1965,7 +1970,7 @@ def webhook(request):
                             'messages': [
                                 {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
                             ]
-                        }), 'application/json')'''
+                        }), 'application/json')
 
                 return HttpResponse(json.dumps({
                     'messages': [
@@ -1977,7 +1982,7 @@ def webhook(request):
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
 
                 ### Check Auto Generated PIN
-                '''qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
+                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if qry_pin_generated.pin==int(keyword[2]):
 
@@ -2059,7 +2064,7 @@ def webhook(request):
                             'messages': [
                                 {'content': "Samahani, namba ya msimbo wa siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 6 tu."}
                             ]
-                        }), 'application/json')'''
+                        }), 'application/json')
 
                 return HttpResponse(json.dumps({
                     'messages': [
