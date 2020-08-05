@@ -1973,7 +1973,7 @@ def webhook(request):
                 ### Check Auto Generated PIN
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
 
-                if int(keyword[2])==qry_pin_generated.pin:
+                if qry_pin_generated.pin==int(keyword[2]):
 
                     #### Update PIN Status
                     qry_pin_generated.status = status_invalid
