@@ -138,10 +138,10 @@ def webhook(request):
                     ]
                 }), 'application/json')
 
-            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" or keyword[0].upper()=="JIHAKIKI":
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and keyword[0].upper()=="JIHAKIKI" or content.strip().isdigit()==True:
                 if content.strip().isdigit()==False:
 
-                    ### If Priviledged To Be JEMBE
+                    ### If Priviledged to be JEMBE
                     if qry_mwananchi.step==4:
                         return HttpResponse(json.dumps({
                             'messages': [
@@ -184,6 +184,18 @@ def webhook(request):
                     }), 'application/json')
 
                 elif int(content.strip())==2:
+
+                    #### If Priviledged to be JEMBE
+                    if qry_mwananchi.step==4:
+                        ### Return Info on how to be JEMBE
+                        return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "JEMBE ni huduma inayompa mwananchi mwenye simu ya mkononi uwezo wa kuwasajili wananchi wengine wasiokuwa na simu ya mkononi ndani ya mtaa/kijiji chake. JEMBE huchaguliwa na afisa mtendaji wa mtaa/kijiji wako/chako.\n\n"+
+                                            "Kupiga JEMBE, tuma neno JEMBE kisha fuata maelekezo."
+                                }
+                            ]
+                        }), 'application/json')
+
                     ### Return mawasiliano ya uongozi wa mtaa/kijiji/kitongoji
                     qry_mjumbe = Mjumbe.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, kitongoji__exact=qry_mwananchi.kitongoji, verification_status__exact="Verified", is_active__exact="Yes")
                     qry_mwenyekiti = Mwenyekiti.objects.get(kata__exact=qry_mwananchi.kata, mtaa_kijiji__exact=qry_mwananchi.mtaa_kijiji, verification_status__exact="Verified", is_active__exact="Yes")
@@ -219,6 +231,14 @@ def webhook(request):
 
                 else:
                     pass
+
+            ## JEMBE Service
+            elif qry_mwananchi.verification_status=="Verified" and qry_mwananchi.is_active=="Yes" and qry_mwananchi.step==4 and keyword[0].upper()=="JEMBE":
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Huduma hii itakujia hivi karibuni!"}
+                    ]
+                }), 'application/json')
 
             elif qry_mwananchi.is_active=="No":
                 return HttpResponse(json.dumps({
@@ -413,7 +433,7 @@ def webhook(request):
                 }), 'application/json')
 
             ## Services available under Mjumbe Keyword
-            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" or keyword[0].upper()=="MJUMBE":
+            elif qry_mjumbe.verification_status=="Verified" and qry_mjumbe.is_active=="Yes" and keyword[0].upper()=="MJUMBE" or content.strip().isdigit()==True:
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -554,6 +574,11 @@ def webhook(request):
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
+
+                    #### Update PIN Status
+                    qry_pin_generated.status = status_invalid
+                    qry_pin_generated.save()
+
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
 
                     #### Check for mwananchi
@@ -563,6 +588,7 @@ def webhook(request):
                         ##### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
                             qry_mwananchi.step += 1
+                            qry_mwananchi.verification_status = status_verified
                             qry_mwananchi.mjumbe_id = qry_mjumbe.id
                             qry_mwananchi.save()
 
@@ -802,10 +828,10 @@ def webhook(request):
                 }), 'application/json')
 
             ### Services available under Mwenyekiti Keyword
-            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" or keyword[0].upper()=="MWENYEKITI":
+            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="MWENYEKITI" or content.strip().isdigit()==True:
                 if content.strip().isdigit()==False:
 
-                    #### If Priviledged To Do Verification
+                    #### If Priviledged to do Verification
                     if qry_mwenyekiti.step==3:
                         return HttpResponse(json.dumps({
                             'messages': [
@@ -847,13 +873,13 @@ def webhook(request):
 
                 elif int(content.strip())==2:
 
-                    #### If Priviledged To Do Verification
+                    #### If Priviledged to do Verification
                     if qry_mwenyekiti.step==3:
                         ### Return Info On How To Choose JEMBE
                         return HttpResponse(json.dumps({
                             'messages': [
-                                {'content': "JEMBE ni huduma ya kumpa mwananchi mwenye simu ya mkononi uwezo wa kuwasajili wananchi wengine wasiokuwa na simu ya mkononi.\n"+
-                                            "Kumchagua JEMBE wa mtaani kwako tuma neno JEMBE likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba yako ya siri. Mfano JEMBE MNC-999-56789 1234.\n"+
+                                {'content': "JEMBE ni huduma ya kumpa mwananchi mwenye simu ya mkononi uwezo wa kuwasajili wananchi wengine wasiokuwa na simu ya mkononi.\n\n"+
+                                            "Kumchagua JEMBE wa mtaani kwako tuma neno JEMBE likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba yako ya siri. Mfano JEMBE MNC-999-56789 1234.\n\n"+
                                             "Kumuondoa JEMBE, tuma maneno ONDOA JEMBE yakifuatiwa na namba ya usajili ya mwananchi ambaye ni JEMBE, ikifuatiwa na namba yako ya siri. Mfano ONDOA JEMBE MNC-999-56789 1234."
                                 }
                             ]
@@ -1065,6 +1091,68 @@ def webhook(request):
                                                 status=status_partial
                                             )
 
+            ## Grant JEMBE Service
+            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.step==3 and keyword[0].upper()=="JEMBE":
+
+                ### Check PIN
+                if int(keyword[2])==qry_mwenyekiti.pin:
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_mwenyekiti.kata, mtaa_kijiji__exact=qry_mwenyekiti.mtaa_kijiji)
+
+                    #### Check for Mwananchi
+                    if qry_mwananchi:
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
+
+                        ##### Check Mwananchi & Make JEMBE by Step 4
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status==status_verified and qry_mwananchi.step==3:
+                            qry_mwananchi += 1
+                            qry_mwananchi.save()
+
+                            message_to_mwananchi = "Habari, umechaguliwa kuwa JEMBE. Kupata taarifa zaidi tuma neno JIHAKIKI."
+
+                            message(message_to_mwananchi, qry_mwananchi.phone)
+
+                            return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Habari, umefanikiwa kuchagua JEMBE. Taarifa zake ni kama ifuatavyo:\n"+
+                                            "Namba: "+qry_mwananchi.id+"\n"+
+                                            "Jina: "+qry_mwananchi.name+"\n"+
+                                            "Simu: "+qry_mwananchi.phone+"\n"+
+                                            "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji
+                                }
+                            ]
+                        }), 'application/json')
+
+            ## Remove JEMBE Service
+            elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and qry_mwenyekiti.step==3 and keyword[0].upper()=="ONDOA" and keyword[1].upper()=="JEMBE":
+
+                ### Check PIN
+                if int(keyword[3])==qry_veo.pin:
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[2].upper(), kata__exact=qry_mwenyekiti.kata, mtaa_kijiji__exact=qry_mwenyekiti.mtaa_kijiji)
+
+                    #### Check for Mwananchi
+                    if qry_mwananchi:
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[2].upper())
+
+                        ##### Check Mwananchi & Remove from JEMBE by Step 3
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status==status_verified and qry_mwananchi.step==4:
+                            qry_mwananchi -= 1
+                            qry_mwananchi.save()
+
+                            message_to_mwananchi = "Habari, umeondolewa katika orodha ya JEMBE."
+
+                            message(message_to_mwananchi, qry_mwananchi.phone)
+
+                            return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Habari, umefanikiwa kumuondoa JEMBE. Taarifa zake ni kama ifuatavyo:\n"+
+                                            "Namba: "+qry_mwananchi.id+"\n"+
+                                            "Jina: "+qry_mwananchi.name+"\n"+
+                                            "Simu: "+qry_mwananchi.phone+"\n"+
+                                            "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji
+                                }
+                            ]
+                        }), 'application/json')
+
             ### Review Service
             elif qry_mwenyekiti.verification_status=="Verified" and qry_mwenyekiti.is_active=="Yes" and keyword[0].upper()=="HAKIKI"and qry_mwenyekiti.step==3:
 
@@ -1194,6 +1282,11 @@ def webhook(request):
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
+
+                    #### Update PIN Status
+                    qry_pin_generated.status = status_invalid
+                    qry_pin_generated.save()
+
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
 
                     ##### Check for Mwananchi
@@ -1203,6 +1296,7 @@ def webhook(request):
                         ###### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==1:
                             qry_mwananchi.step += 1
+                            qry_mwananchi.verification_status = status_verified
                             qry_mwananchi.veo_id = qry_mwenyekiti.id
                             qry_mwananchi.save()
 
@@ -1232,6 +1326,7 @@ def webhook(request):
                         ###### Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
                             qry_mjumbe.step += 1
+                            qry_mjumbe.verification_status = status_verified
                             qry_mjumbe.veo_id = qry_mwenyekiti.id
                             qry_mjumbe.save()
 
@@ -1440,7 +1535,7 @@ def webhook(request):
                 }), 'application/json')
 
             ## Services available under VEO Keyword
-            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" or keyword[0].upper()=="MTENDAJI":
+            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="MTENDAJI" or content.strip().isdigit()==True:
                 if content.strip().isdigit()==False:
                     return HttpResponse(json.dumps({
                         'messages': [
@@ -1474,8 +1569,8 @@ def webhook(request):
                     ### Return Info On How To Choose JEMBE
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': "JEMBE ni huduma ya kumpa mwananchi mwenye simu ya mkononi uwezo wa kuwasajili wananchi wengine wasiokuwa na simu ya mkononi.\n"+
-                                        "Kumchagua JEMBE wa mtaani kwako tuma neno JEMBE likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba yako ya siri. Mfano JEMBE MNC-999-56789 1234.\n"+
+                            {'content': "JEMBE ni huduma ya kumpa mwananchi mwenye simu ya mkononi uwezo wa kuwasajili wananchi wengine wasiokuwa na simu ya mkononi.\n\n"+
+                                        "Kumchagua JEMBE wa mtaani kwako tuma neno JEMBE likifuatiwa na namba ya usajili ya mwananchi, ikifuatiwa na namba yako ya siri. Mfano JEMBE MNC-999-56789 1234.\n\n"+
                                         "Kumuondoa JEMBE, tuma maneno ONDOA JEMBE yakifuatiwa na namba ya usajili ya mwananchi ambaye ni JEMBE, ikifuatiwa na namba yako ya siri. Mfano ONDOA JEMBE MNC-999-56789 1234."
                             }
                         ]
@@ -1688,6 +1783,68 @@ def webhook(request):
                                                 status=status_partial
                                             )
 
+            ## Grant JEMBE Service
+            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="JEMBE":
+
+                ### Check PIN
+                if int(keyword[2])==qry_veo.pin:
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
+
+                    #### Check for Mwananchi
+                    if qry_mwananchi:
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[1].upper())
+
+                        ##### Check Mwananchi & Make JEMBE by Step 4
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status==status_verified and qry_mwananchi.step==3:
+                            qry_mwananchi += 1
+                            qry_mwananchi.save()
+
+                            message_to_mwananchi = "Habari, umechaguliwa kuwa JEMBE. Kupata taarifa zaidi tuma neno JIHAKIKI."
+
+                            message(message_to_mwananchi, qry_mwananchi.phone)
+
+                            return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Habari, umefanikiwa kuchagua JEMBE. Taarifa zake ni kama ifuatavyo:\n"+
+                                            "Namba: "+qry_mwananchi.id+"\n"+
+                                            "Jina: "+qry_mwananchi.name+"\n"+
+                                            "Simu: "+qry_mwananchi.phone+"\n"+
+                                            "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji
+                                }
+                            ]
+                        }), 'application/json')
+
+            ## Remove JEMBE Service
+            elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="ONDOA" and keyword[1].upper()=="JEMBE":
+
+                ### Check PIN
+                if int(keyword[3])==qry_veo.pin:
+                    qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[2].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
+
+                    #### Check for Mwananchi
+                    if qry_mwananchi:
+                        qry_mwananchi = qry_mwananchi.get(id__exact=keyword[2].upper())
+
+                        ##### Check Mwananchi & Remove from JEMBE by Step 3
+                        if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status==status_verified and qry_mwananchi.step==4:
+                            qry_mwananchi -= 1
+                            qry_mwananchi.save()
+
+                            message_to_mwananchi = "Habari, umeondolewa katika orodha ya JEMBE."
+
+                            message(message_to_mwananchi, qry_mwananchi.phone)
+
+                            return HttpResponse(json.dumps({
+                            'messages': [
+                                {'content': "Habari, umefanikiwa kumuondoa JEMBE. Taarifa zake ni kama ifuatavyo:\n"+
+                                            "Namba: "+qry_mwananchi.id+"\n"+
+                                            "Jina: "+qry_mwananchi.name+"\n"+
+                                            "Simu: "+qry_mwananchi.phone+"\n"+
+                                            "Mtaa/Kijiji: "+qry_mwananchi.mtaa_kijiji
+                                }
+                            ]
+                        }), 'application/json')
+
             ## Review Service
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
 
@@ -1817,6 +1974,11 @@ def webhook(request):
                 qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if int(keyword[2])==qry_pin_generated.pin:
+
+                    #### Update PIN Status
+                    qry_pin_generated.status = status_invalid
+                    qry_pin_generated.save()
+
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper())
 
                     qry_mjumbe = Mjumbe.get(id__exact=keyword[1].upper())
@@ -1828,6 +1990,7 @@ def webhook(request):
                         ##### Check Mwananchi Active and Verification status
                         if qry_mwananchi.is_active=="Yes" and qry_mwananchi.verification_status=="Unverified" and qry_mwananchi.step==2:
                             qry_mwananchi.step += 1
+                            qry_mwananchi.verification_status = status_verified
                             qry_mwananchi.veo_id = qry_veo.id
                             qry_mwananchi.save()
 
@@ -1857,6 +2020,7 @@ def webhook(request):
                         ##### Check Mjumbe Active and Verification status
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
                             qry_mjumbe.step += 1
+                            qry_mjumbe.verification_status = status_verified
                             qry_mjumbe.veo_id = qry_veo.id
                             qry_mjumbe.save()
 
@@ -2088,8 +2252,8 @@ def webhook(request):
                     ### Return Info On Make Mwenyekiti Verifier
                     return HttpResponse(json.dumps({
                         'messages': [
-                            {'content': "Huduma ya kumuwezesha mwenyekiti kufanya uhakiki ni maalumu kwa eneo la mtaa/kijiji ambalo halina afisa mtendaji wa mtaa/kijiji.\n"+
-                                        "Kumuwezesha mwenyekiti tuma neno WEZESHA likifuatiwa na namba ya usajili ya mwenyekiti, ikifuatiwa na namba yako ya siri. Mfano WEZESHA MNC-999-56789 1234.\n"+
+                            {'content': "Huduma ya kumuwezesha mwenyekiti kufanya uhakiki ni maalumu kwa eneo la mtaa/kijiji ambalo halina afisa mtendaji wa mtaa/kijiji.\n\n"+
+                                        "Kumuwezesha mwenyekiti tuma neno WEZESHA likifuatiwa na namba ya usajili ya mwenyekiti, ikifuatiwa na namba yako ya siri. Mfano WEZESHA MNC-999-56789 1234.\n\n"+
                                         "Kuondoa uwezo wa mwenyekiti, tuma maneno ONDOA WEZESHA yakifuatiwa na namba ya usajili ya mwenyekiti, ikifuatiwa na namba yako ya siri. Mfano ONDOA WEZESHA MNC-999-56789 1234."
                             }
                         ]
