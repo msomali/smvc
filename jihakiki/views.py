@@ -1942,10 +1942,10 @@ def webhook(request):
                                     try:
                                         qry_pin.save()
                                     finally:
-                                        pass
+                                        pin_generated = pinGen()
 
                             ###### Save Generated PIN
-                            pin_generated = pinGen()
+                            #pin_generated = pinGen()
 
                             qry_pin_generated = Pin.objects.create(
                                 pin=pin_generated,
