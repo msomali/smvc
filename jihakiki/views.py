@@ -1912,10 +1912,10 @@ def webhook(request):
                         if qry_mjumbe.is_active=="Yes" and qry_mjumbe.verification_status=="Unverified" and qry_mjumbe.step==1:
 
                             ###### Disable Existing PIN Before Generating Another
-                            qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
+                            qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__excat=status_valid)
                             if qry_pin:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_veo.id)
-                                qry_pin.status = "Invalid"
+                                qry_pin.status = status_invalid
                                 qry_pin.save()
 
                             ###### Save Generated PIN
