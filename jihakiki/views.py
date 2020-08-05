@@ -1941,6 +1941,8 @@ def webhook(request):
                                     qry_pin.status = status_invalid
                                     try:
                                         qry_pin.save()
+                                    finally:
+                                        pass
 
                             ###### Save Generated PIN
                             pin_generated = pinGen()
