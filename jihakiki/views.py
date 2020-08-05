@@ -1849,7 +1849,7 @@ def webhook(request):
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="HAKIKI":
 
                 ### Check PIN
-                if int(keyword[2])==qry_veo.pin:
+                '''if int(keyword[2])==qry_veo.pin:
                     qry_mwananchi = Mwananchi.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
 
                     qry_mjumbe = Mjumbe.objects.filter(id__exact=keyword[1].upper(), kata__exact=qry_veo.kata, mtaa_kijiji__exact=qry_veo.mtaa_kijiji)
@@ -1965,13 +1965,19 @@ def webhook(request):
                             'messages': [
                                 {'content': "Samahani, namba ya siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 4 tu."}
                             ]
-                        }), 'application/json')
+                        }), 'application/json')'''
+
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Hakiki"}
+                    ]
+                }), 'application/json')
 
             ## Verification Service
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
 
                 ### Check Auto Generated PIN
-                qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
+                '''qry_pin_generated = Pin.objects.get(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service, status__exact="Valid")
 
                 if qry_pin_generated.pin==int(keyword[2]):
 
@@ -2053,7 +2059,13 @@ def webhook(request):
                             'messages': [
                                 {'content': "Samahani, namba ya msimbo wa siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 6 tu."}
                             ]
-                        }), 'application/json')
+                        }), 'application/json')'''
+
+                return HttpResponse(json.dumps({
+                    'messages': [
+                        {'content': "Thibitisha"}
+                    ]
+                }), 'application/json')
 
             elif qry_veo.is_active=="No":
                 return HttpResponse(json.dumps({
