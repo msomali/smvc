@@ -1913,7 +1913,19 @@ def webhook(request):
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
-                            if qry_pin is None or qry_pin is not None:
+                            if qry_pin is None:
+                                return HttpResponse(json.dumps({
+                                    'messages': [
+                                        {'content': "None."}
+                                    ]
+                                }), 'application/json')
+                            if qry_pin is not None:
+                                return HttpResponse(json.dumps({
+                                    'messages': [
+                                        {'content': "Not None."}
+                                    ]
+                                }), 'application/json')
+                            '''if qry_pin is None or qry_pin is not None:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
                                 qry_pin.status = status_invalid
                                 qry_pin.save()
@@ -1946,7 +1958,7 @@ def webhook(request):
                                                 "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
-                            }), 'application/json')
+                            }), 'application/json')'''
                         else:
                             return HttpResponse(json.dumps({
                                 'messages': [
