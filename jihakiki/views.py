@@ -514,15 +514,10 @@ def webhook(request):
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mjumbe.id, project__exact=project, service__exact=service)
-
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_mjumbe.id, status__exact=status_valid)
-                                except:
-                                    pass
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    qry_pin.save()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_mjumbe.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
 
                             ###### Save Generated PIN
                             pin_generated = pinGen()
@@ -1176,15 +1171,10 @@ def webhook(request):
 
                             ####### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service)
-
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id, status__exact=status_valid)
-                                except:
-                                    pass
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    qry_pin.save()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
 
                             ####### Save Generated PIN
                             pin_generated = pinGen()
@@ -1231,15 +1221,10 @@ def webhook(request):
 
                             ####### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_mwenyekiti.id, project__exact=project, service__exact=service)
-
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id, status__exact=status_valid)
-                                except:
-                                    pass
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    qry_pin.save()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_mwenyekiti.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
 
                             ####### Save Generated PIN
                             pin_generated = pinGen()
@@ -1878,15 +1863,10 @@ def webhook(request):
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
-
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
-                                except:
-                                    pass
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    qry_pin.save()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_veo.id)
+                                qry_pin.status = "Invalid"
+                                qry_pin.save()
 
                             ###### Save Generated PIN
                             pin_generated = pinGen()
@@ -1933,19 +1913,13 @@ def webhook(request):
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
-
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    try:
-                                        qry_pin.save()
-                                    finally:
-                                        pin_generated = pinGen()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
+                                qry_pin.status = status_invalid
+                                qry_pin.save()
 
                             ###### Save Generated PIN
-                            #pin_generated = pinGen()
+                            pin_generated = pinGen()
 
                             qry_pin_generated = Pin.objects.create(
                                 pin=pin_generated,
@@ -2080,12 +2054,6 @@ def webhook(request):
                                 {'content': "Samahani, namba ya msimbo wa siri uliyoingiza sio sahihi. Hakikisha umeingiza tarakimu 6 tu."}
                             ]
                         }), 'application/json')
-
-                return HttpResponse(json.dumps({
-                    'messages': [
-                        {'content': "Thibitisha"}
-                    ]
-                }), 'application/json')
 
             elif qry_veo.is_active=="No":
                 return HttpResponse(json.dumps({
@@ -2322,13 +2290,9 @@ def webhook(request):
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_weo.id, project__exact=project, service__exact=service)
                             if qry_pin:
-                                try:
-                                    qry_pin = qry_pin.get(generator_id__exact=qry_weo.id,  status__exact=status_valid)
-                                except:
-                                    pass
-                                finally:
-                                    qry_pin.status = status_invalid
-                                    qry_pin.save()
+                                qry_pin = qry_pin.get(generator_id__exact=qry_weo.id)
+                                qry_pin.status = status_invalid
+                                qry_pin.save()
 
                             ###### Save Generated PIN
                             pin_generated = pinGen()
