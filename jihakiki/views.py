@@ -1914,22 +1914,14 @@ def webhook(request):
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
 
-                            if qry_pin is None or qry_pin is not None:
-                                qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
-                                if qry_pin is None:
-                                    return HttpResponse(json.dumps({
-                                        'messages': [
-                                            {'content': "None."}
-                                        ]
-                                    }), 'application/json')
-                                if qry_pin is not None:
-                                    return HttpResponse(json.dumps({
-                                        'messages': [
-                                            {'content': "Not None."}
-                                        ]
-                                    }), 'application/json')
-                                qry_pin.status = status_invalid
-                                qry_pin.save()
+                            if qry_pin:
+                                try:
+                                    qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
+                                except:
+                                    pass
+                                finally:
+                                    qry_pin.status = status_invalid
+                                    qry_pin.save()
 
                             ###### Save Generated PIN
                             pin_generated = pinGen()
