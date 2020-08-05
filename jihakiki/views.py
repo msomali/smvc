@@ -1972,12 +1972,6 @@ def webhook(request):
                             ]
                         }), 'application/json')
 
-                return HttpResponse(json.dumps({
-                    'messages': [
-                        {'content': "Hakiki"}
-                    ]
-                }), 'application/json')
-
             ## Verification Service
             elif qry_veo.verification_status=="Verified" and qry_veo.is_active=="Yes" and keyword[0].upper()=="THIBITISHA":
 
