@@ -1942,9 +1942,8 @@ def webhook(request):
                                                 "Mtaa/Kijiji: "+qry_mjumbe.mtaa_kijiji+"\n"+
                                                 "Kitongoji: "+qry_mjumbe.kitongoji+"\n"+
                                                 "Shina: "+str(qry_mjumbe.shina)+"\n"+
-                                                "Msimbo: "+str(pin_generated)
-                                                #"Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mjumbe, ikifuatiwa na namba ya msimbo huu wa siri "+str(pin_generated)+"\n"+
-                                                #"Mfano: THIBITISHA MNC-999-54865 748593."
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mjumbe, ikifuatiwa na namba ya msimbo huu wa siri "+str(pin_generated)+"\n"+
+                                                "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
                             }), 'application/json')
