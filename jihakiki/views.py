@@ -2364,7 +2364,7 @@ def webhook(request):
                                                 "Kitamb. Namba: "+str(qry_veo.id_number)+"\n"+
                                                 "Kata: "+qry_veo.kata+"\n"+
                                                 "Mtaa/Kijiji: "+qry_veo.mtaa_kijiji+"\n"+
-                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mtendaji, ikifuatiwa na namba ya msimbo huu wa siri "+pin_generated+"\n"+
+                                                "Kuthibitisha tuma neno THIBITISHA likifuatiwa na namba ya usajili ya mtendaji, ikifuatiwa na namba ya msimbo huu wa siri "+str(pin_generated)+"\n"+
                                                 "Mfano: THIBITISHA MNC-999-54865 748593."
                                     }
                                 ]
