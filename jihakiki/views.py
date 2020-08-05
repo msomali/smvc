@@ -1913,7 +1913,7 @@ def webhook(request):
 
                             ###### Disable Existing PIN Before Generating Another
                             qry_pin = Pin.objects.filter(generator_id__exact=qry_veo.id, project__exact=project, service__exact=service)
-                            if qry_pin:
+                            if qry_pin is None or qry_pin is not None:
                                 qry_pin = qry_pin.get(generator_id__exact=qry_veo.id, status__exact=status_valid)
                                 qry_pin.status = status_invalid
                                 qry_pin.save()
