@@ -78,15 +78,15 @@ WSGI_APPLICATION = 'smvc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'jihakiki',
-        'USER': 'root',
-        'PASSWORD': '',
+        'NAME': 'xxx',
+        'USER': 'xxx',
+        'PASSWORD': 'xxx',
         'HOST': '',
         'PORT': '3306',
-        # 'NAME': 'msomali$jihakiki',
-        # 'USER': 'msomali',
-        # 'PASSWORD': 'Muungano@1964',
-        # 'HOST': 'msomali.mysql.pythonanywhere-services.com',
+        # 'NAME': 'msomali$xxx',
+        # 'USER': 'xxx',
+        # 'PASSWORD': 'x@x',
+        # 'HOST': 'msomali.xxx.xxx.com',
     }
 }
 
